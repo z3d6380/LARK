@@ -11,5 +11,6 @@ There are 0x10 types of people out there... those that understand binary.. and..
 # The Development Team
 
 - John Bodoh
+- Alec Brown
 - Luis Moraguez
 - Mykell Spencer

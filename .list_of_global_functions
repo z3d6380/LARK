@@ -1,0 +1,17 @@
+# Functions to Initialize globally
+
+## General
+journal
+stats
+abortMission
+
+## For Objects
+printMainText(mainText)
+addInventory
+printErrorInventory
+breakObject
+printErrorUnbreakable
+printErrorPlot
+addJournalEntry(journalText)
+printErrorJournal
+printObjectUsageMessage

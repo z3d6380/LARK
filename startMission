@@ -1,0 +1,66 @@
+#!/bin/bash
+# Initialization script, contains all functions and initializes all global variables needed for game
+# User types ". ./startMission &&" to start game
+
+# Global Variables
+
+# Functions
+
+# General
+# General functions called by the user
+
+# journal, the -r option prints the contents of the journal file to the terminal, the -w option opens the terminal in Vim
+function journal()
+{
+}
+# stats, prints the game stats from the .hp and .xp files, xp is calculated through wc -l of the journal file
+function stats()
+{
+}
+# heal, this function restores 33% of health, can only be run three times
+function heal()
+{
+}
+#abortMission, cleans up all temporary directories and variables and exits the game
+function abortMission()
+{
+}
+
+# Objects
+# These functions are used in object scripts
+
+# printMainText, this function runs when user types -a after object and prints the text associated with picking up the object; the text is established in the $mainText variable in the object script and passed to the function
+function printMainText(text)
+{
+}
+# addInventory, this function adds an item to the inventory
+function addInventory()
+{
+}
+# printErrorInventory, this function prints an error stating that the object cannot be added to the inventory
+function printErrorInventory()
+{
+}
+# breakObject, this function breaks an object by deleting its object script
+function breakObject()
+{
+}
+# printErrorUnbreakable, this function prints an error stating that an object cannot be broken
+function printErrorUnbreakable()
+{
+}
+# printErrorPlot, this function prints an error stating that the object is necessary for the plot and cannot be broken
+function printErrorPlot()
+{
+}
+# addJournalEntry, this function adds an entry to the journal corresponding to the text passed to the function; this comes from the journalText variable in the object script
+function addJournalEntry(text)
+{
+}
+# printErrorJournal, this function prints an error stating that there is nothing to add to the journal about the specified object"
+{
+}
+# printObjectUsageMessage, this function prints a generic usage message for objects when the user types an invalid option
+function printObjectUsageMessage()
+{
+}

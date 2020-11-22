@@ -1,5 +1,6 @@
 #!/bin/bash
 # 11/22/2020
+# Test link
 # This is the template file for any of the objects in the game.
 
 # mainText should contain the text that appears when the object is first used

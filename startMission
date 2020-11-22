@@ -20,6 +20,8 @@ playerDir=$mainDir/.player
 inventoryDir=$playerDir/.inventoryDir
 # objectDir, location of object scripts
 objectDir=$mainDir/.objects
+# artDir, location of art objects
+artDir=$mainDir/.art
 # Global text color variables
 red=$(tput setaf 1)
 green=$(tput setaf 2)
@@ -30,7 +32,7 @@ reset=$(tput sgr0)
 # originalPS1, saves original PS1 variable to be restored by abortMission() upon exit of game
 originalPS1=$PS1
 # sets PS1 variable to output of stats function to make prompt display stats
-PS1='$(heal)[$(stats), Location:${cyan}\w${reset}] > $(isDead)'
+PS1='\[$(heal)\]\[[$(stats), Location:${cyan}\w${reset}]\] > \[$(isDead)\]'
 
 # Player files
 # .hp and .xp are created and initialized if the file don't exist. If the files exist, they are not reinitialized.
@@ -114,8 +116,8 @@ clear
 		  echo "20" > $playerDir/.hp
 	     elif [ $option = "N" ] || [ $option = "n" ]
 		then
-		  $( resetGame )
-		  # $( cleanup )
+		  resetGame
+		  # cleanup
 	     else
 		echo "20" > $playerDir/.hp
 	     fi
@@ -130,7 +132,7 @@ clear
 	  case "$yn" in
 	    Y|y)
 	      echo "No problem, we have saved your progress."
-	      $( cleanup )
+	      cleanup
 	      ;;
 	    N|n)
 	      echo "That's the spirit! Keep up the good work."
@@ -144,10 +146,12 @@ clear
 	function cleanup()
 	{
 	  PS1=$originalPS1
+	  cd $mainDir
 	  unset originalPS1
 	  unset playerDir
 	  unset objectLinkPath
 	  unset mainDir
+	  clear
 	  return
 	  exit
 	}
@@ -224,3 +228,12 @@ clear
 	  echo "$objectName -{aibn}"
 	  return
 	}
+
+# Move player into HQ folder
+cd $mainDir/HQ
+# Display title
+cat $artDir/title
+# Give initial ls and cd instructions so that player can either do the tutorial in "Training" folder or go straight to "Mission: Dissonance"
+initialInstructions="Use 'ls' to look around.\nUse 'cd' followed by the folder name to move into the desired destination.\nUse 'journal -r' to view your notes\nUse 'abortMission' to quit the game."
+echo -e $initialInstructions
+echo -e $initialInstructions >> $playerDir/.journal

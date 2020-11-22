@@ -4,63 +4,228 @@
 
 # Global Variables
 
-# Functions
+#runningState, when set to false causes game loop to exit and script to initizte cleanup and exit.
+# runningState="true"
+# mainDir, top level directory of game, obtained by running pwd command during first initialization
+mainDir="$(pwd)"
+# playerDir, location of hidden player directory containing journal file, stats, etc.
+playerDir=$mainDir/.player
+# inventoryDir, directory of symlinks to scripts of objects in inventory
+inventoryDir=$playerDir/.inventoryDir
+# objectDir, location of object scripts
+objectDir=$mainDir/.objects
+# originalPS1, saves original PS1 variable to be restored by abortMission() upon exit of game
+originalPS1=$PS1
+# sets PS1 variable to output of stats function to make prompt display stats
+PS1='`isDead``heal`[`stats`] > '
 
-# General
-# General functions called by the user
+# Player files
+# .hp and .xp are initialized with "-1", which indicates a new game. If different value is detected files are not reinitialized.
+if [ ! -f $playerDir/.hp ]
+  then
+    echo "100" > $playerDir/.hp
+fi
+#if [ $(awk -f , 'NR==1 {print $1}' $playerDir"/.hp") -eq -1 ]
+#  then
+#    echo "100" > $playerDir/.hp
+#fi
+if [ ! -f $playerDir/.xp ]
+  then
+    echo "0" > $playerDir/.xp
+fi
+#Create empty .journal and .inventory files if they do not exist
+if [ ! -f $playerDir/.journal ]
+  then
+    echo "" > $playerDir/.journal
+fi
+if [ ! -f $playerDir/.inventory ]
+  then
+    echo "" > $playerDir/.inventory
+fi
+#if [ $playerDir/.xp == "-1" ]
+#  then
+#    echo "0" > $playerDir/.xp
+#fi
 
-# journal, the -r option prints the contents of the journal file to the terminal, the -w option opens the terminal in Vim
-function journal()
-{
-}
-# stats, prints the game stats from the .hp and .xp files, xp is calculated through wc -l of the journal file
-function stats()
-{
-}
-# heal, this function restores 33% of health, can only be run three times
-function heal()
-{
-}
-#abortMission, cleans up all temporary directories and variables and exits the game
-function abortMission()
-{
-}
+# while [ runningState == "true" ]
+# do
+	# Functions
 
-# Objects
-# These functions are used in object scripts
+	# General
+	# General functions called by the user
 
-# printMainText, this function runs when user types -a after object and prints the text associated with picking up the object; the text is established in the $mainText variable in the object script and passed to the function
-function printMainText(text)
-{
-}
-# addInventory, this function adds an item to the inventory
-function addInventory()
-{
-}
-# printErrorInventory, this function prints an error stating that the object cannot be added to the inventory
-function printErrorInventory()
-{
-}
-# breakObject, this function breaks an object by deleting its object script
-function breakObject()
-{
-}
-# printErrorUnbreakable, this function prints an error stating that an object cannot be broken
-function printErrorUnbreakable()
-{
-}
-# printErrorPlot, this function prints an error stating that the object is necessary for the plot and cannot be broken
-function printErrorPlot()
-{
-}
-# addJournalEntry, this function adds an entry to the journal corresponding to the text passed to the function; this comes from the journalText variable in the object script
-function addJournalEntry(text)
-{
-}
-# printErrorJournal, this function prints an error stating that there is nothing to add to the journal about the specified object"
-{
-}
-# printObjectUsageMessage, this function prints a generic usage message for objects when the user types an invalid option
-function printObjectUsageMessage()
-{
-}
+	# journal, the -r option prints the contents of the journal file to the terminal, the -w option opens the journal file in Vim
+	function journal()
+	{
+	  option=$1
+	  case $option in
+	    "-r"|r)
+	      cat $playerDir/.journal
+	      ;;
+	    "-w"|w)
+	      vim $playerDir/.journal
+	      wc -l $playerDir/.journal >> $playerDir/.xp
+	      ;;
+	    *)
+	      echo "journal(-rw)"
+	      ;;
+	  esac
+	  return
+	}
+	# stats, prints the game stats from the .hp and .xp files, xp is calculated through wc -l of the journal file
+	function stats()
+	{
+	  echo "HP: $(cat $playerDir/.hp), XP: $(cat $playerDir/.xp)"
+	  return
+	}
+	# heal, this function adds 5 HP to the total every time it is run, to a maximum of 100 HP
+	function heal()
+	{ 
+	  maxHP=100
+	  currentHP=$(cat $playerDir/.hp)
+	  if [ $currentHP -ge 1 ]
+	     then
+	 	 if [ $(($maxHP - $currentHP)) -ge 5 ]
+	 	   then
+	 	     echo $(($currentHP + 5)) > $playerDir/.hp
+	 	 elif [ $(($maxHP - $currentHP)) -lt 5 ]
+	 	   then
+	 	     echo $(($currentHP + ($maxHP - $currentHP))) > $playerDir/.hp
+	 	 fi
+	  fi
+	  return
+	}
+	# isDead, checks to see if HP - 0 and runs cleanup function and quits game if this is the case
+	function isDead()
+	{
+	  currentHP=$(cat $playerDir/.hp)
+	  if [ $currentHP -le 0 ]
+	    then
+	      option=""
+	     read -p "You have died. Would you like to keep trying? (Y/N)" option
+	     case $option in
+	       Y|y)
+	          echo 20 > $playerDir/.hp
+		  ;;
+	       N|n)
+		  echo "The devs have not implemented automatic dying yet, so to quit the game, please enter \"abortMission\""
+		# cleanup
+		# resetGame
+		  ;;
+	      *)
+		 echo 20 > $playerDir/.hp
+		 ;;
+	      esac
+	  fi
+	  return 
+	}
+	#abortMission, cleans up all temporary directories and variables and exits the game
+	function abortMission()
+	{
+	  yn=""
+	  read -p "Agent Ryann, are you sure you want to abort mission? (Y/N)" yn
+	  case "$yn" in
+	    Y|y)
+	      echo "No problem, we have saved your progress."
+	      cleanup
+	      ;;
+	    N|n)
+	      echo "That's the spirit! Keep up the good work."
+	      ;;
+	     *)
+	      ;;
+	  esac
+	  return
+	}
+	# cleanup, this function deletes all temporary global variables and files and exits the game
+	function cleanup()
+	{
+	  PS1=$originalPS1
+	  unset originalPS1
+	  unset playerDir
+	  unset objectLinkPath
+	  unset mainDir
+	# unset runningState
+	  return
+	  exit
+	}
+	# resetGame, this function creates a new game by setting all files and variables to defailt values and creating symlinks in default locations
+	function resetGame()
+	{
+	  rm $playerDir/{.hp,.xp,.journal,.inventory}
+	  return
+	}
+
+	# Objects
+	# These functions are used in object scripts
+
+	# printMainText, this function runs when user types -a after object and prints the text associated with picking up the object; the text is established in the $mainText variable in the object script and passed to the function
+	function printMainText()
+	{
+	  text=$1
+	  echo $text
+	  return
+	}
+	# addInventory, this function adds an item to the inventory by moving its simlink from the room to the inventory directory
+	function addInventory()
+	{
+	  objectName=$1
+	  objectLinkPath=$2
+	  echo $objectName >> $playerDir/.inventory
+	  ln -s $objectDir/$objectName $inventoryDir/$objectName
+	  rm $objectLinkPath
+	  return
+	}
+	# printErrorInventory, this function prints an error stating that the object cannot be added to the inventory
+	function printErrorInventory()
+	{
+	  echo "You cannot pick that up."
+	  return
+	}
+	# breakObject, this function breaks an object by deleting its symlink in the room or inventory
+	function breakObject()
+	{
+	  objectLinkPath=$1
+	  rm $objectLinkPath
+	  return
+	}
+	# printErrorUnbreakable, this function prints an error stating that an object cannot be broken
+	function printErrorUnbreakable()
+	{
+	  echo "You cannot break that."
+	  return
+	}
+	# printErrorPlot, this function prints an error stating that the object is necessary for the plot and cannot be broken
+	function printErrorPlot()
+	{
+	  echo "\"I don't think I should break this. It might be useful later.\""
+	  return
+	}
+	# addJournalEntry, this function adds an entry to the journal corresponding to the text passed to the function; this comes from the journalText variable in the object script
+	function addJournalEntry()
+	{
+	  text=$1
+	  echo $text >> $playerDir/.journal
+	  echo "$(cat $playerDir/.journal | wc -l)" | $(gawk '{print $1}') > $playerDir/.xp
+	  return
+	}
+	# printErrorJournal, this function prints an error stating that there is nothing to add to the journal about the specified object"
+	function printErrorJournal()
+	{
+	  echo "\"I don't see anything interesting about this object.\""
+	  return
+	}
+	# printObjectUsageMessage, this function prints a generic usage message for objects when the user types an invalid option
+	function printObjectUsageMessage()
+	{
+	  objectName=$1
+	  echo "$objectName -{aibn}"
+	  return
+	}
+# done
+
+# Cleanup actions
+# When runningState is set to false and while loop with functions exits, these actions are taken to clean up and exit
+# Add all global variables to this section
+
+# return

@@ -236,6 +236,7 @@ cd $mainDir/HQ
 # Display title
 cat $artDir/title
 # Give initial ls and cd instructions so that player can either do the tutorial in "Training" folder or go straight to "Mission: Dissonance"
-initialInstructions="Use 'ls' to look around.\nUse 'cd' followed by the folder name to move into the desired destination.\nUse 'journal -r' to view your notes\nUse 'abortMission' to quit the game."
+initialInstructions="\nUse 'ls' to look around.\nUse 'cd' followed by the folder name to move into the desired destination.\nUse 'cat' to read contents. Try 'cat ./Profile.txt'\nUse 'journal -r' to view your notes\nUse 'abortMission' to quit the game."
+cat $mainDir/HQ/Prologue.txt | less --window=4
 echo -e $initialInstructions
 echo -e $initialInstructions >> $playerDir/.journal

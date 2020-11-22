@@ -12,3 +12,5 @@ Operating System (OS). His sour taste of the invasion of his homeland by the the
 during the second World War leads him to aid the United States in the Cold War. Giving
 his newfound technology to the Americans, he hopes to heal the wounds of the loss of the
 Winter War.
+
+Press 'q' to start the game.

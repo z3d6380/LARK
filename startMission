@@ -178,8 +178,8 @@ clear
 	  objectName=$1
 	  objectLinkPath=$2
 	  echo $objectName >> $playerDir/.inventory
-	  ln $objectDir/$objectName $inventoryDir/$objectName
-	  unlink $objectLinkPath
+	# ln $objectDir/$objectName $inventoryDir/$objectName
+	  mv $objectLinkPath $inventoryDir/$objectName
 	  return
 	}
 	# printErrorInventory, this function prints an error stating that the object cannot be added to the inventory
@@ -191,8 +191,10 @@ clear
 	# breakObject, this function breaks an object by deleting its symlink in the room or inventory
 	function breakObject()
 	{
-	  objectLinkPath=$1
-	  unlink $objectLinkPath
+	  objectName=$1
+	  objectLinkPath=$2
+	#  unlink $objectLinkPath
+	  mv $objectLinkPath $objectDir/$objectName
 	  return
 	}
 	# printErrorUnbreakable, this function prints an error stating that an object cannot be broken

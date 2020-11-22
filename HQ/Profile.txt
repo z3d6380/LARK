@@ -1,0 +1,35 @@
+Character Profile:
+
+
+PERSONAL DETAILS:
+Agent Name: Cleopatra Ryann
+Code Name: Pharaoh
+Date of Birth: August 12, 1965
+Nationality: Russo-American
+Marital Status: Single
+Children: 0
+Gender: Female
+Languages: English (American, Fluent), Russian (Elementary Level)
+
+DESCRIPTION:
+Age: 26
+Laterality: Right
+Height: 5' 9" (1.75 meters)
+Weight: 127 lbs. (57.61 kilograms)
+Vision: 20/20
+Eye Color: Brown
+Hair Color: Black
+
+LICENSES:
+	- Firearms
+	- Vehicle
+	- Hacking
+
+SPECIALIST FIELDS:
+	- Hacking		- Data Science
+	- Cyber Security	- Engineering
+	- Weapon Forensics	- Information Technology
+	- Code Breaking		
+
+
+

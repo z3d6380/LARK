@@ -1,0 +1,14 @@
+Prologue:
+
+November 30, 1939:
+Mistrust between the Union of Soviet Socialist Republics (USSR) and Finalnd has lead to
+this day, the start of the "Winter War". Battles spread across the frozen forests of 
+Finland until March 13, 1940. In a humiliating loss, Finland ceded much of its territory
+to the Soviet regime to protect key cities of the Union.
+
+August 25, 1991:
+Finnish Computer Science student, Linus Torvalds, introduced the world to the Linux 
+Operating System (OS). His sour taste of the invasion of his homeland by the the USSR 
+during the second World War leads him to aid the United States in the Cold War. Giving
+his newfound technology to the Americans, he hopes to heal the wounds of the loss of the
+Winter War.

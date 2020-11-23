@@ -5,7 +5,7 @@
 mainText="\"Great, this flashlight still works. I should add this to my inventory with 'flashlight -i'.\""
 
 # If the object is notable and can be added to the journal, then journalText can contain either its own text or a subset of text grepped or gawked from mainText; otherwise, it contains an empty string
-journalText="I can shine light on hidden items with 'flashlight' or 'ls -a'."
+journalText="I can shine light on hidden items with 'flashlight' or 'ls -aF'."
 LinkPath=$PWD
 sourceName="flashlight"
 destName="flashlight"
@@ -14,11 +14,11 @@ case $1 in
   "-a")
     printMainText "$mainText"
     # insert the commands associated with using the object here
-    ls -a.
+    ls -aF.
     ;;
   "-i")
-    echo "\"OK, I have added this to my utility belt. I can use this anytime with 'flashlight' or 'ls -a'.\""
-    alias flashlight='ls -a'
+    echo "\"OK, I have added this to my utility belt. I can use this anytime with 'flashlight' or 'ls -aF'.\""
+    alias flashlight='ls -aF'
     # If the object can be added to the inventory, uncomment the addInventory function, otherwise uncomment printInventoryError
     addInventory "$destName" "$LinkPath/$sourceName"
     # printErrorInventory

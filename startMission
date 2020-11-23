@@ -58,8 +58,20 @@ fi
 clear
 
 # Aliases
-alias "use "='. ./'
-alias "open "='. ./'
+# alias "useItem "='. ./'
+# alias "openItem "='. ./'
+function useItem()
+{
+	item=$1
+	option=$2
+	"source $item $option"
+}
+function openItem()
+{
+	item=$1
+	option=$2
+	"source $item $option"
+}
 
 	# Functions
 

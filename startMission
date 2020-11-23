@@ -62,14 +62,14 @@ clear
 # alias "openItem "='. ./'
 function useItem()
 {
-	item=$1
-	option=$2
+	local item=$1
+	local option=$2
 	"source $item $option"
 }
 function openItem()
 {
-	item=$1
-	option=$2
+	local item=$1
+	local option=$2
 	"source $item $option"
 }
 
@@ -81,7 +81,7 @@ function openItem()
 	# journal, the -r option prints the contents of the journal file to the terminal, the -w option opens the journal file in Vim
 	function journal()
 	{
-	  option=$1
+	  local option=$1
 	  case $option in
 	    "-r"|r)
 	      cat $playerDir/.journal
@@ -105,8 +105,8 @@ function openItem()
 	# heal, this function adds 5 HP to the total every time it is run, to a maximum of 100 HP
 	function heal()
 	{ 
-	  maxHP=100
-	  currentHP=$(cat $playerDir/.hp)
+	  local maxHP=100
+	  local currentHP=$(cat $playerDir/.hp)
 	  if [ $currentHP -ge 1 ]
 	     then
 	 	 if [ $(($maxHP - $currentHP)) -ge 5 ]
@@ -122,10 +122,10 @@ function openItem()
 	# isDead, checks to see if HP - 0 and runs cleanup function and quits game if this is the case
 	function isDead()
 	{
-	  currentHP=$(cat $playerDir/.hp)
+	  local currentHP=$(cat $playerDir/.hp)
 	  if [ $currentHP -le 0 ]
 	    then
-	     option=""
+	     local option=""
 	     read -p "You have died. Would you like to keep trying? (Y/N)" option
 	     if [ $option = "Y" ] || [ $option = "y" ]
 		then
@@ -143,7 +143,7 @@ function openItem()
 	#abortMission, cleans up all temporary directories and variables and exits the game
 	function abortMission()
 	{
-	  yn=""
+	  local yn=""
 	  read -p "Agent Ryann, are you sure you want to abort mission? (Y/N)" yn
 	  case "$yn" in
 	    Y|y)
@@ -163,9 +163,18 @@ function openItem()
 	{
 	  PS1=$originalPS1
 	  cd $mainDir
+	  
 	  unset originalPS1
 	  unset playerDir
-	  unset objectLinkPath
+	  unset inventoryDir
+	  unset artDir
+	  unset red
+	  unset green
+	  unset blue
+	  unset yellow
+	  unset cyan
+	  unset reset
+	  unset initialInstructions
 	  unset mainDir
 	  clear
 	  return
@@ -184,15 +193,15 @@ function openItem()
 	# printMainText, this function runs when user types -a after object and prints the text associated with picking up the object; the text is established in the $mainText variable in the object script and passed to the function
 	function printMainText()
 	{
-	  text=$1
+	  local text=$1
 	  echo $text
 	  return
 	}
 	# addInventory, this function adds an item to the inventory by moving its simlink from the room to the inventory directory
 	function addInventory()
 	{
-	  objectName=$1
-	  objectLinkPath=$2
+	  local objectName=$1
+	  local objectLinkPath=$2
 	  echo $objectName >> $playerDir/.inventory
 	# ln $objectDir/$objectName $inventoryDir/$objectName
 	  mv $objectLinkPath $inventoryDir/$objectName
@@ -207,8 +216,8 @@ function openItem()
 	# breakObject, this function breaks an object by deleting its symlink in the room or inventory
 	function breakObject()
 	{
-	  objectName=$1
-	  objectLinkPath=$2
+	  local objectName=$1
+	  local objectLinkPath=$2
 	#  unlink $objectLinkPath
 	  mv $objectLinkPath $objectDir/$objectName
 	  return
@@ -228,7 +237,7 @@ function openItem()
 	# addJournalEntry, this function adds an entry to the journal corresponding to the text passed to the function; this comes from the journalText variable in the object script
 	function addJournalEntry()
 	{
-	  text=$1
+	  local text=$1
 	  echo $text >> $playerDir/.journal
 	  echo "$(cat $playerDir/.journal | wc -l)" > $playerDir/.xp
 	  return
@@ -242,7 +251,7 @@ function openItem()
 	# printObjectUsageMessage, this function prints a generic usage message for objects when the user types an invalid option
 	function printObjectUsageMessage()
 	{
-	  objectName=$1
+	  local objectName=$1
 	  echo "$objectName -{aibn}"
 	  return
 	}

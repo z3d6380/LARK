@@ -57,6 +57,10 @@ fi
 # Ready the user screen
 clear
 
+# Aliases
+alias "use "='. ./'
+alias "open "='. ./'
+
 	# Functions
 
 	# General

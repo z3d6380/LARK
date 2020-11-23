@@ -1,0 +1,37 @@
+#!/bin/bash
+# This is the template file for any of the objects in the game.
+
+# mainText should contain the text that appears when the object is first used
+mainText="Insert text here"
+
+# If the object is notable and can be added to the journal, then journalText can contain either its own text or a subset of text grepped or gawked from mainText; otherwise, it contains an empty string
+journalText="Test journal entry for test object"
+LinkPath=$PWD
+sourceName="objectTemplate"
+destName="objectTemplate2"
+
+case $1 in
+  "-a")
+    printMainText "$mainText"
+    # insert the commands associated with using the object here
+    ;;
+  "-i")
+    # If the object can be added to the inventory, uncomment the addInventory function, otherwise uncomment printInventoryError
+    addInventory "$destName" "$LinkPath/$sourceName"
+    # printErrorInventory
+    ;;
+  "-b")
+    # If the object is breakable, uncomment breakObject, if the object cannot be broken, uncomment printErrorUnbreakable, or if the object is necessary to the plot and should not be breakable, uncomment printErrorPlot
+    breakObject "$destName" "$LinkPath/$sourceName"
+    # printErrorUnbreakable
+    # printErrorPlot
+    ;;
+  "-n")
+    # If the object is noteworthy for the plot, uncomment addJournalEntry, otherwise uncomment printErrorJournal
+    addJournalEntry "$journalText"
+    # printErrorJournal
+    ;;
+  *)
+    printObjectUsageMessage "$sourceName"
+    ;;
+esac

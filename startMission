@@ -32,9 +32,14 @@ reset=$(tput sgr0)
 # originalPS1, saves original PS1 variable to be restored by abortMission() upon exit of game
 originalPS1=$PS1
 # sets PS1 variable to output of stats function to make prompt display stats
-PS1='\[$(heal)\]\[[$(stats), Location:${cyan}\w${reset}]\] > \[$(isDead)\]'
+PS1='\[$(heal)\]\[[$(stats), Location:${cyan}\W${reset}]\] > \[$(isDead)\]'
 
 # Player files
+# Check if directories exist, if they do not exist uncompress .reset.tgz
+if [ ! -d $playerDir ] || [ ! -d $objectDir ] || [ ! -d $mainDir/HQ ] || [ ! -d $artDir ]
+  then
+    tar -xzpf .reset.tgz .
+fi
 # .hp and .xp are created and initialized if the file don't exist. If the files exist, they are not reinitialized.
 if [ ! -f $playerDir/.hp ]
   then
@@ -183,7 +188,10 @@ function openItem()
 	# resetGame, this function creates a new game by setting all files and variables to default values and creating symlinks in default locations
 	function resetGame()
 	{
-	  rm $playerDir/{.hp,.xp,.journal,.inventory}
+	  cd $mainDir
+	  rm -rf $mainDir/{.art,HQ,LICENSE,.list_of_global_functions,.objects,.player,README.md,testRoom}
+	  tar -xzpf .reset.tgz .
+	  cleanup
 	  return
 	}
 

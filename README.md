@@ -9,7 +9,7 @@
 - Windows 10 (With WSL2 installed)
 
 # Running the Game
-Unzip the redWinter-Alpha.tgz file to any directory with write permissions by typing 'tar -xzvf redWinter-Alpha.tgz <pathname>'. Then, navigate to the folder that contains the game and type '. ./startMission'.
+Unzip the redWinter-Alpha.tgz file to any directory with write permissions by typing 'tar -xzvf redWinter-Alpha.tgz' followed by the pathname of the directory to extract it to. Then, navigate to the folder that contains the game and type '. ./startMission'.
 
 # The Development Team
 

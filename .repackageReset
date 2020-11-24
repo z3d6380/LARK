@@ -1,0 +1,26 @@
+#!/bin/bash
+# Repackage Reset script allows us to quickly create a .reset.tgz package of the game for easy restore to default
+clear
+echo "##########[WARNING DANGEROUS SCRIPT]########"
+echo "########## BE SURE THAT ALL GAME    ########"
+echo "########## DIRECTORIES AND FILES    ########"
+echo "########## ARE IN THEIR CORRECT     ########"
+echo "########## STATES BEFORE RUNNING    ########"
+echo "########## THIS SCRIPT              ########"
+echo -e "\n"
+option=""
+read -p "Did you read the warning above and still want to proceed? (Y/N)- " option
+if [[ $option == "Y" ]] || [[ $option == 'y' ]]
+then
+	# perform these steps
+	rm .reset.tgz
+	tar --exclude='./startMission' --exclude='./.git' --exclude='./.bash_prompt_command*' --exclude='.repackageReset' -czpvf .reset.tgz .
+	rm -rf ./{.art,HQ,LICENSE,.list_of_global_functions,.objects,.player,README.md,testRoom}
+elif [[ $option == "N" ]] || [[ $option == 'n' ]]
+then
+	# perform these steps
+	echo "Everything was left as it was"
+else
+	# perform these steps
+	echo "Invalid option, so we left everything as it was"
+fi

@@ -28,17 +28,31 @@ objectDir=$mainDir/.objects
 artDir=$mainDir/.art
 # originalPS1, saves original PS1 variable to be restored by abortMission() upon exit of game
 originalPS1=$PS1
+# text for .bash_prompt_command file depending on whether alive or dead
+bash_prompt_alive='GREEN="\[\\033[0;32m\]"\nCYAN="\[\\033[0;36m\]"\nRED="\[\\033[0;31m\]"\nPURPLE="\[\\033[0;35m\]"\nBROWN="\[\\033[0;33m\]"\nLIGHT_GRAY="\[\\033[0;37m\]"\nLIGHT_BLUE="\[\\033[1;34m\]"\nLIGHT_GREEN="\[\\033[1;32m\]"\nLIGHT_CYAN="\[\\033[1;36m\]"\nLIGHT_RED="\[\\033[1;31m\]"\nLIGHT_PURPLE="\[\\033[1;35m\]"\nYELLOW="\[\\033[1;33m\]"\nWHITE="\[\\033[1;37m\]"\nRESTORE="\[\\033[0m\]"\n\nexec $(heal)\nexec $(isDead)\nexec echo -e "[$(stats), Location:${CYAN}\W${RESTORE}]-\$ "'
+bash_prompt_restore="unset PROMPT_COMMAND\nunset GREEN\nunset CYAN\nunset RED\nunset PURPLE\nunset BROWN\nunset LIGHT_GRAY\nunset LIGHT_BLUE\nunset LIGHT_GREEN\nunset LIGHT_CYAN\nunset LIGHT_RED\nunset LIGHT_PURPLE\nunset YELLOW\nunset WHITE\nunset RESTORE\n\nexec echo \"$originalPS1\""
+echo -e $bash_prompt_alive > $mainDir/.bash_prompt_command
 # sets PS1 variable to output of stats function to make prompt display stats
+__inner_reset_key=0
 function prompt_command()
 {
 	local __resetQuit=$1
-	local quit='resetGame'
+	local f
+	# local quit='resetGame'
 	if [[ "$__resetQuit" ]]
 	  then
-		eval $__resetQuit="'$quit'"
-		export PS1=$(source $mainDir/.bash_prompt_restore)
-		$q f
-		unset PROMPT_COMMAND
+		export PS1=$(source $mainDir/.bash_prompt_command)
+                sleep 1
+		f=__inner_reset_f_$((inner_reset_key++))
+		eval "function ${f}() { $(resetGame) c; }"
+		# eval $__resetQuit="'$quit'"
+		# echo "echo $originalPS1"
+		# unset -f isDead
+		# unset PROMPT_COMMAND
+		# PROMPT_COMMAND=""
+		# unset -f prompt_command
+		# $q f
+                # exec $(resetGame)
 	else
 		export PS1=$(source $mainDir/.bash_prompt_command)
 	fi
@@ -152,7 +166,7 @@ function isDead()
   local currentHP=$(cat $playerDir/.hp)
   if [ $currentHP -le 0 ]
     then
-     #clear
+     # clear
      local option=""
      read -p "You have died. Would you like to keep trying? (Y/N) -> " option
      if [ $option = "Y" ] || [ $option = "y" ]
@@ -160,6 +174,7 @@ function isDead()
 		echo "20" > $playerDir/.hp
      elif [ $option = "N" ] || [ $option = "n" ]
 	then
+		echo -e $bash_prompt_restore > $mainDir/.bash_prompt_command
 		prompt_command q
      else
 	echo "20" > $playerDir/.hp
@@ -223,6 +238,7 @@ function cleanup()
 function resetGame()
 {
   local __funcCall=$1
+  local f
   cd $mainDir
   rm -rf $mainDir/{.art,HQ,LICENSE,.list_of_global_functions,.objects,.player,README.md,testRoom}
   tar -xzpf .reset.tgz .
@@ -230,8 +246,10 @@ function resetGame()
     then
       cleanup d
   else
-      cleanup
+      f=__inner_reset_f_$((inner_reset_key++))
+      eval "function ${f}() { $(cleanup); }"
   fi
+  return
 }
 # Objects
 # These functions are used in object scripts

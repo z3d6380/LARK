@@ -29,8 +29,19 @@ artDir=$mainDir/.art
 # originalPS1, saves original PS1 variable to be restored by abortMission() upon exit of game
 originalPS1=$PS1
 # sets PS1 variable to output of stats function to make prompt display stats
-function prompt_command {
-	export PS1=$(source $mainDir/.bash_prompt_command)
+function prompt_command()
+{
+	local __resetQuit=$1
+	local quit='resetGame'
+	if [[ "$__resetQuit" ]]
+	  then
+		eval $__resetQuit="'$quit'"
+		export PS1=$(source $mainDir/.bash_prompt_restore)
+		$q f
+		unset PROMPT_COMMAND
+	else
+		export PS1=$(source $mainDir/.bash_prompt_command)
+	fi
 }
 export PROMPT_COMMAND=prompt_command
 
@@ -49,6 +60,11 @@ if [ ! -f $playerDir/.xp ]
   then
     echo "0" > $playerDir/.xp
 fi
+# die function will kill player instantly
+function die()
+{
+  echo 0 > $playerDir/.hp
+}
 #Create empty .journal and .inventory files if they do not exist
 if [ ! -f $playerDir/.journal ]
   then
@@ -144,7 +160,7 @@ function isDead()
 		echo "20" > $playerDir/.hp
      elif [ $option = "N" ] || [ $option = "n" ]
 	then
-		return
+		prompt_command q
      else
 	echo "20" > $playerDir/.hp
      fi
@@ -160,7 +176,7 @@ function abortMission()
   case "$yn" in
     Y|y)
       echo "No problem, we have saved your progress."
-      cleanup
+      cleanup d
       ;;
     N|n)
       echo "That's the spirit! Keep up the good work."
@@ -173,28 +189,31 @@ function abortMission()
 # cleanup, this function deletes all temporary global variables and files and exits the game
 function cleanup()
 {
-  unset PROMPT_COMMAND
-  export PROMPT_COMMAND=""
-  PS1=$originalPS1
+  local __directCall=$1
+  if [[ "$__directCall" ]]
+    then
+      unset PROMPT_COMMAND
+      PS1=$originalPS1
+      unset GREEN
+      unset CYAN
+      unset RED
+      unset PURPLE
+      unset BROWN
+      unset LIGHT_GRAY
+      unset LIGHT_BLUE
+      unset LIGHT_GREEN
+      unset LIGHT_CYAN
+      unset LIGHT_RED
+      unset LIGHT_PURPLE
+      unset YELLOW
+      unset WHITE
+      unset RESTORE
+  fi
   cd $mainDir
-  unset originalPS1
+  # unset originalPS1
   unset playerDir
   unset inventoryDir
   unset artDir
-  unset GREEN
-  unset CYAN
-  unset RED
-  unset PURPLE
-  unset BROWN
-  unset LIGHT_GRAY
-  unset LIGHT_BLUE
-  unset LIGHT_GREEN
-  unset LIGHT_CYAN
-  unset LIGHT_RED
-  unset LIGHT_PURPLE
-  unset YELLOW
-  unset WHITE
-  unset RESTORE
   unset initialInstructions
   unset mainDir
   clear
@@ -203,10 +222,16 @@ function cleanup()
 # resetGame, this function creates a new game by setting all files and variables to default values and creating symlinks in default locations
 function resetGame()
 {
+  local __funcCall=$1
   cd $mainDir
   rm -rf $mainDir/{.art,HQ,LICENSE,.list_of_global_functions,.objects,.player,README.md,testRoom}
   tar -xzpf .reset.tgz .
-  cleanup
+  if [[ ! "$__funcCall" ]]
+    then
+      cleanup d
+  else
+      cleanup
+  fi
 }
 # Objects
 # These functions are used in object scripts

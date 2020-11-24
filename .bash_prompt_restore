@@ -1,0 +1,15 @@
+unset GREEN
+unset CYAN
+unset RED
+unset PURPLE
+unset BROWN
+unset LIGHT_GRAY
+unset LIGHT_BLUE
+unset LIGHT_GREEN
+unset LIGHT_CYAN
+unset LIGHT_RED
+unset LIGHT_PURPLE
+unset YELLOW
+unset WHITE
+unset RESTORE
+echo "\"$originalPS1\""

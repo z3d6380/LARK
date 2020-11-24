@@ -32,7 +32,8 @@ reset=$(tput sgr0)
 # originalPS1, saves original PS1 variable to be restored by abortMission() upon exit of game
 originalPS1=$PS1
 # sets PS1 variable to output of stats function to make prompt display stats
-PS1='\[$(heal)\]\[[$(stats), Location:${cyan}\W${reset}]\] > \[$(isDead)\]'
+PS1L1='[$(stats), Location:\[${cyan}\]\W\[${reset}$(heal)$(isDead)\]]'
+PS1=$PS1L1' > '
 
 # Player files
 # Check if directories exist, if they do not exist uncompress .reset.tgz
@@ -62,22 +63,28 @@ fi
 # Ready the user screen
 clear
 
-# Aliases
-# alias "useItem "='. ./'
-# alias "openItem "='. ./'
-function useItem()
+# Alias functions
+function use()
 {
 	local item=$1
 	local option=$2
+	echo "${yellow}Tip: For playing in Hard Mode, try to remember '. ./' followed by the name of the object to interact with.${reset}"
 	"source $item $option"
+	return
 }
-function openItem()
+function open()
 {
 	local item=$1
 	local option=$2
+	echo "${yellow}Tip: For playing in Hard Mode, try to remember '. ./' followed by the name of the object to interact with.${reset}"
 	"source $item $option"
+	return
 }
-
+function adminView()
+{
+	ls -aR -I.git
+	return
+}
 	# Functions
 
 	# General
@@ -86,6 +93,7 @@ function openItem()
 	# journal, the -r option prints the contents of the journal file to the terminal, the -w option opens the journal file in Vim
 	function journal()
 	{
+	  clear
 	  local option=$1
 	  case $option in
 	    "-r"|r)
@@ -96,7 +104,7 @@ function openItem()
 	      echo "$(cat $playerDir/.journal | wc -l)" > $playerDir/.xp
 	      ;;
 	    *)
-	      echo "journal(-rw)"
+	      echo "journal(-r or -w)"
 	      ;;
 	  esac
 	  return
@@ -130,15 +138,15 @@ function openItem()
 	  local currentHP=$(cat $playerDir/.hp)
 	  if [ $currentHP -le 0 ]
 	    then
+	     clear
 	     local option=""
-	     read -p "You have died. Would you like to keep trying? (Y/N)" option
+	     read -p "You have died. Would you like to keep trying? (Y/N) -> " option
 	     if [ $option = "Y" ] || [ $option = "y" ]
 		then
 		  echo "20" > $playerDir/.hp
 	     elif [ $option = "N" ] || [ $option = "n" ]
 		then
-		  resetGame
-		  # cleanup
+		  resetGame && cleanup
 	     else
 		echo "20" > $playerDir/.hp
 	     fi
@@ -148,6 +156,7 @@ function openItem()
 	#abortMission, cleans up all temporary directories and variables and exits the game
 	function abortMission()
 	{
+	  clear
 	  local yn=""
 	  read -p "Agent Ryann, are you sure you want to abort mission? (Y/N)" yn
 	  case "$yn" in
@@ -210,15 +219,15 @@ function openItem()
 	{
 	  local objectName=$1
 	  local objectLinkPath=$2
-	  echo $objectName >> $playerDir/.inventory
+	  # echo $objectName >> $playerDir/.inventory
 	# ln $objectDir/$objectName $inventoryDir/$objectName
-	  mv $objectLinkPath $inventoryDir/$objectName
+	  mv $objectLinkPath $inventoryDir/$objectName && echo $objectName >> $playerDir/.inventory
 	  return
 	}
 	# printErrorInventory, this function prints an error stating that the object cannot be added to the inventory
 	function printErrorInventory()
 	{
-	  echo "You cannot pick that up."
+	  echo "${red}\"Hmm, it doesn't seem like I can pick that up.\"${reset}"
 	  return
 	}
 	# breakObject, this function breaks an object by deleting its symlink in the room or inventory
@@ -226,20 +235,19 @@ function openItem()
 	{
 	  local objectName=$1
 	  local objectLinkPath=$2
-	#  unlink $objectLinkPath
-	  mv $objectLinkPath $objectDir/$objectName
+	  mv $objectLinkPath $objectDir/.brokenByUser/$objectName
 	  return
 	}
 	# printErrorUnbreakable, this function prints an error stating that an object cannot be broken
 	function printErrorUnbreakable()
 	{
-	  echo "You cannot break that."
+	  echo "${red}\"Hmm, it doesn't seem like I can break that.\"${reset}"
 	  return
 	}
 	# printErrorPlot, this function prints an error stating that the object is necessary for the plot and cannot be broken
 	function printErrorPlot()
 	{
-	  echo "\"I don't think I should break this. It might be useful later.\""
+	  echo "${red}\"I don't think I should break this. It might be useful later.\"${reset}"
 	  return
 	}
 	# addJournalEntry, this function adds an entry to the journal corresponding to the text passed to the function; this comes from the journalText variable in the object script
@@ -253,14 +261,14 @@ function openItem()
 	# printErrorJournal, this function prints an error stating that there is nothing to add to the journal about the specified object"
 	function printErrorJournal()
 	{
-	  echo "\"I don't see anything interesting about this object.\""
+	  echo "${red}\"I don't see anything interesting about this object.\"${reset}"
 	  return
 	}
 	# printObjectUsageMessage, this function prints a generic usage message for objects when the user types an invalid option
 	function printObjectUsageMessage()
 	{
 	  local objectName=$1
-	  echo "$objectName -{aibn}"
+	  echo "${yellow}$objectName ('-a' or '-i' or '-b' or '-n')${reset}"
 	  return
 	}
 
@@ -270,6 +278,7 @@ cd $mainDir/HQ
 cat $artDir/title
 # Give initial ls and cd instructions so that player can either do the tutorial in "Training" folder or go straight to "Mission: Dissonance"
 initialInstructions="\nUse 'ls' to look around.\nUse 'cd' followed by the folder name to move into the desired destination.\nUse 'cat' to read contents. Try 'cat ./Profile.txt'\nUse 'journal -r' to view your notes\nUse 'abortMission' to quit the game."
+echo -e "\n"
 cat $mainDir/HQ/Prologue.txt | less --window=4
 echo -e $initialInstructions
 echo -e $initialInstructions >> $playerDir/.journal

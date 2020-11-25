@@ -18,6 +18,7 @@ case $1 in
   "-i")
     # If the object can be added to the inventory, uncomment the addInventory function, otherwise uncomment printInventoryError
     addInventory "$destName" "$LinkPath/$sourceName"
+    # If the object can be added to the inventory, create a function below that is initialized upon addition to inventory and is executed when user types object name
     # printErrorInventory
     ;;
   "-b")

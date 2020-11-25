@@ -18,7 +18,11 @@ case $1 in
     ;;
   "-i")
     echo "\"OK, I have added this to my utility belt. I can use this anytime with 'flashlight' or 'ls -aF'.\""
-    alias flashlight='ls -aF'
+    function flashlight
+    {
+	ls -aF
+	return
+    }
     # If the object can be added to the inventory, uncomment the addInventory function, otherwise uncomment printInventoryError
   # addInventory "$destName" "$LinkPath/$sourceName"
     # printErrorInventory

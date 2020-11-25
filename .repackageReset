@@ -14,8 +14,10 @@ if [[ $option == "Y" ]] || [[ $option == 'y' ]]
 then
 	# perform these steps
 	rm .reset.tgz
-	tar --exclude='./startMission' --exclude='./.git' --exclude='./.bash_prompt_command*' --exclude='.repackageReset' -czpvf .reset.tgz .
-	rm -rf ./{.art,HQ,LICENSE,.list_of_global_functions,.objects,.player,README.md,testRoom}
+	tar --exclude='./startMission' --exclude='./.git' --exclude='./.bash_prompt_command*' --exclude='.repackageReset' --exclude='README.md' --exclude='LICENSE' -czpvf .reset.tgz .
+	rm -rf ./{.art,HQ,.objects,.player}
+	cp .reset.tgz .reset.tgz.bkup
+	tar -xzpvf .reset.tgz .
 elif [[ $option == "N" ]] || [[ $option == 'n' ]]
 then
 	# perform these steps

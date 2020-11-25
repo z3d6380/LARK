@@ -63,6 +63,10 @@ export PROMPT_COMMAND=prompt_command
 # Check if directories exist, if they do not exist uncompress .reset.tgz
 if [ ! -d $playerDir ] || [ ! -d $objectDir ] || [ ! -d $mainDir/HQ ] || [ ! -d $artDir ]
   then
+	if [ ! -f ./.reset.tgz.bkup]
+	  then
+		cp .reset.tgz .reset.tgz.bkup
+	fi
 	tar -xzpf .reset.tgz .
 fi
 # .hp and .xp are created and initialized if the file don't exist. If the files exist, they are not reinitialized.
@@ -279,9 +283,12 @@ function resetGame()
   local __funcCall=$1
   local f
   clear
-  cd $mainDir
+  builtin cd $mainDir
   rm -rf ./{.art,HQ,.objects,.player}
-  cp .reset.tgz .reset.tgz.bkup
+  if [ ! -f ./.reset.tgz.bkup]
+    then
+	cp .reset.tgz .reset.tgz.bkup
+  fi
   tar -xzpf .reset.tgz .
   if [[ ! "$__funcCall" ]]
     then

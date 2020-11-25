@@ -67,7 +67,7 @@ if [ ! -d $playerDir ] || [ ! -d $objectDir ] || [ ! -d $mainDir/HQ ] || [ ! -d 
 	  then
 		cp .reset.tgz .reset.tgz.bkup
 	fi
-	tar -xzpf .reset.tgz .
+	tar -xzpf .reset.tgz ./
 fi
 # .hp and .xp are created and initialized if the file don't exist. If the files exist, they are not reinitialized.
 if [ ! -f $playerDir/.hp ]
@@ -284,12 +284,12 @@ function resetGame()
   local f
   clear
   builtin cd $mainDir
-  rm -rf ./{.art,HQ,.objects,.player}
+  rm -rf ./{.art,HQ,.objects,.player,.reset.tgz.bkup}
   if [ ! -f ./.reset.tgz.bkup]
     then
 	cp .reset.tgz .reset.tgz.bkup
   fi
-  tar -xzpf .reset.tgz .
+  tar -xzpf .reset.tgz ./
   if [[ ! "$__funcCall" ]]
     then
       cleanup d

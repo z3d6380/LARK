@@ -210,7 +210,7 @@ function abortMission()
 {
   clearScreen
   local yn=""
-  read -p "Agent Ryann, are you sure you want to abort mission? (Y/N)" yn
+  read -p "Agent Ryann, are you sure you want to abort mission? (Y/N) -> " yn
   case "$yn" in
     Y|y)
       echo "No problem, we have saved your progress."
@@ -368,7 +368,7 @@ function printObjectUsageMessage()
 # Move player into HQ folder
 cd $mainDir/HQ
 # Display title
-cat $artDir/title
+# cat $artDir/title
 # Give initial ls and cd instructions so that player can either do the tutorial in "Training" folder or go straight to "Mission: Dissonance"
 initialInstructions="----------------------------------------------------------------------\n
 Linux Commands:\n

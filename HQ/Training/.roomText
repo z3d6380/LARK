@@ -1,0 +1,33 @@
+################################################
+############|                      |############
+############| CIA Training Complex |############
+############|______________________|############
+
+Cadet,
+
+Your journal has been updated with instructions
+that will bring you success in your training and
+on your missions. When you are finished reading
+the rest of this message, press (q). To access
+your journal, enter the following command:
+
+'journal -r'
+
+Your journal can be read at any time with
+that command, and will be needed to complete
+your training.
+
+Once you complete your training, you can move
+to your previous location using the following
+command:
+
+'cd ..'
+
+Issuing that command from this training complex
+will bring you back to HQ, and from there you can
+move ('cd') on to your first mission as an
+elite agent of the CIA.
+
+Good Luck,
+
+-HQ

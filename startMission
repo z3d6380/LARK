@@ -1,7 +1,7 @@
 #!/bin/bash
-# Initialization script, contains all functions and initializes all global variables needed for game
+# Initialization script, contains all functions and initializes all global functions/variables needed for game
 # User types ". ./startMission" to start game
-# User types ". ./objectScriptName -option" to interact with objects in the rooms
+# User types ". ./objectScriptName -option" or "source/use/open objectScriptName -option" to interact with objects in the rooms
 
 # Debug options
 if [[ $1 == "-x" ]]
@@ -63,7 +63,7 @@ export PROMPT_COMMAND=prompt_command
 # Check if directories exist, if they do not exist uncompress .reset.tgz
 if [ ! -d $playerDir ] || [ ! -d $objectDir ] || [ ! -d $mainDir/HQ ] || [ ! -d $artDir ]
   then
-    tar -xzpf .reset.tgz .
+	tar -xzpf .reset.tgz .
 fi
 # .hp and .xp are created and initialized if the file don't exist. If the files exist, they are not reinitialized.
 if [ ! -f $playerDir/.hp ]
@@ -97,6 +97,7 @@ function use()
 {
 	local item=$1
 	local option=$2
+	clearScreen
 	echo "${YELLOW}Tip: For playing in Hard Mode, try to remember '. ./' followed by the name of the object to interact with.${RESTORE}"
 	"source $item $option"
 	return
@@ -105,12 +106,30 @@ function open()
 {
 	local item=$1
 	local option=$2
+	clearScreen
 	echo "${YELLOW}Tip: For playing in Hard Mode, try to remember '. ./' followed by the name of the object to interact with.${RESTORE}"
 	"source $item $option"
 	return
 }
+function cd()
+{
+	clearScreen
+	builtin cd "$@"
+	if [ -f ./.roomText ]
+	  then
+		cat ./.roomText | less
+	fi
+	return
+}
+function clearScreen()
+{
+	clear
+	cat $artDir/title
+	return
+}
 function adminView()
 {
+	clearScreen
 	ls -aR -I.git
 	return
 }
@@ -121,11 +140,11 @@ function adminView()
 # journal, the -r option prints the contents of the journal file to the terminal, the -w option opens the journal file in Vim
 function journal()
 {
-  clear
+  clearScreen
   local option=$1
   case $option in
     "-r"|r)
-      cat $playerDir/.journal
+      cat $playerDir/.journal | less
       ;;
     "-w"|w)
       vim $playerDir/.journal
@@ -166,7 +185,7 @@ function isDead()
   local currentHP=$(cat $playerDir/.hp)
   if [ $currentHP -le 0 ]
     then
-     # clear
+     clearScreen
      local option=""
      read -p "You have died. Would you like to keep trying? (Y/N) -> " option
      if [ $option = "Y" ] || [ $option = "y" ]
@@ -185,7 +204,7 @@ function isDead()
 #abortMission, cleans up all temporary directories and variables and exits the game
 function abortMission()
 {
-  clear
+  clearScreen
   local yn=""
   read -p "Agent Ryann, are you sure you want to abort mission? (Y/N)" yn
   case "$yn" in
@@ -231,6 +250,26 @@ function cleanup()
   unset artDir
   unset initialInstructions
   unset mainDir
+  unset -f clearScreen
+  unset -f cd
+  unset -f open
+  unset -f use
+  unset -f heal
+  unset -f isDead
+  unset -f stats
+  unset -f journal
+  unset -f adminView
+  unset -f abortMission
+  unset -f printMainText
+  unset -f addInventory
+  unset -f printErrorInventory
+  unset -f breakObject
+  unset -f printErrorUnbreakable
+  unset -f printErrorPlot
+  unset -f addJournalEntry
+  unset -f printErrorJournal
+  unset -f printObjectUsageMessage
+  unset -f resetGame
   clear
   return
 }
@@ -239,8 +278,10 @@ function resetGame()
 {
   local __funcCall=$1
   local f
+  clear
   cd $mainDir
-  rm -rf $mainDir/{.art,HQ,LICENSE,.list_of_global_functions,.objects,.player,README.md,testRoom}
+  rm -rf ./{.art,HQ,.objects,.player}
+  cp .reset.tgz .reset.tgz.bkup
   tar -xzpf .reset.tgz .
   if [[ ! "$__funcCall" ]]
     then
@@ -322,8 +363,28 @@ cd $mainDir/HQ
 # Display title
 cat $artDir/title
 # Give initial ls and cd instructions so that player can either do the tutorial in "Training" folder or go straight to "Mission: Dissonance"
-initialInstructions="\nUse 'ls' to look around.\nUse 'cd' followed by the folder name to move into the desired destination.\nUse 'cat' to read contents. Try 'cat ./Profile.txt'\nUse 'journal -r' to view your notes\nUse 'abortMission' to quit the game."
+initialInstructions="----------------------------------------------------------------------\n
+Linux Commands:\n
+Use 'ls' or 'ls -F' to look around.\n
+- The '-F' tells you more about what you're looking at:\n
+-- Anything with '/' at the end is directory\n
+-- Anything with '*' at the end is a script to run with 'use scriptName -{a|i|b|n}'\n
+-- Files with no special character at the end are typically text that you can 'cat ./fileName'\n
+Use 'cd' to move. Try 'cd Training' and 'cd ..' to move back to HQ\n
+Use 'cat' to read contents. Try 'cat ./Profile.txt'\n
+** Encase files/directories with quotes if their names have spaces **\n
+\n
+Game Commands:\n
+Use 'journal -r' to view your notes // 'journal -w' to write notes\n
+Use 'use' or 'open' to interact with objects. Ex. 'use flashlight -i'\n
+- Object options are:\n
+-- '-a' for action (will perform task with object)\n
+-- '-i' for inventory (if object can be carried)\n
+-- '-b' for breaking (if object is breakable)\n
+-- '-n' for notes (if object is noteworthy it will automatically be added to your journal)\n
+Use 'abortMission' to save your progress and quit the game.\n
+Use 'resetGame' to set the game back to default and quit\n
+----------------------------------------------------------------------\n"
 cat $mainDir/HQ/Prologue.txt | less --window=4
-echo -e $initialInstructions
-echo -e "\n"
+echo -e "Enter 'cd Training' to get started\n"
 echo -e $initialInstructions >> $playerDir/.journal

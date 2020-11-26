@@ -335,6 +335,7 @@ function printErrorPlot()
 function addJournalEntry()
 {
   local text=$1
+  echo "\"$text\""
   echo $text >> $playerDir/.journal
   echo "$(cat $playerDir/.journal | wc -l)" > $playerDir/.xp
   return

@@ -7,6 +7,7 @@
 # resize -s 32 77
 # stty rows 32
 # stty cols 77
+# printf '\e[8;32;77t'
 
 # Debug options
 if [[ $1 == "-x" ]]
@@ -21,6 +22,30 @@ fi
 
 # Global Variables
 
+# Initial text to insert into journal
+initialJournalInstructions="-----------------------------------------------------------------------------\n
+Linux Commands:\n
+Use 'ls' or 'ls -F' to look around.\n
+- The '-F' tells you more about what you're looking at:\n
+-- Anything with '/' at the end is directory\n
+-- Anything with '*' at the end is a script -> 'use scriptName -{a|i|b|n}'\n
+-- Files with no special character are typically text -> 'cat ./fileName'\n
+Use 'cd' to move. Try 'cd Training' and 'cd ..' to move back to HQ\n
+Use 'cat' to read contents. Try 'cat ./Profile.txt'\n
+-- Encase files/directories with quotes if their names have spaces\n
+\n
+Game Commands:\n
+Use 'journal -r' to view your notes // 'journal -w' to write notes\n
+Use 'use' or 'open' to interact with objects. Ex. 'use flashlight -i'\n
+- Object options are:\n
+-- '-a' for action (will perform task with object)\n
+-- '-i' for inventory (if object can be carried)\n
+-- '-b' for breaking (if object is breakable)\n
+-- '-n' for notes (noteworthy objects will auto be added to your journal)\n
+Use 'abortMission' to save your progress and quit the game.\n
+Use 'resetGame' to set the game back to default and quit\n
+-----------------------------------------------------------------------------\n"
+gameTip="Enter 'cd ./Training' to get started\n"
 # mainDir, top level directory of game, obtained by running pwd command during first initialization
 mainDir="$(pwd)"
 # playerDir, location of hidden player directory containing journal file, stats, etc.
@@ -57,7 +82,7 @@ export PROMPT_COMMAND=prompt_command
 # Check if directories exist, if they do not exist uncompress .reset.tgz
 if [ ! -d $playerDir ] || [ ! -d $objectDir ] || [ ! -d $mainDir/HQ ] || [ ! -d $artDir ]
   then
-	if [ ! -f ./.reset.tgz.bkup]
+	if [ ! -f ./.reset.tgz.bkup ]
 	  then
 		cp .reset.tgz .reset.tgz.bkup
 	fi
@@ -81,7 +106,7 @@ function die()
 if [ ! -f $playerDir/.journal ]
   then
     touch $playerDir/.journal
-   # echo -e $initialInstructions >> $playerDir/.journal
+    echo -e $initialJournalInstructions >> $playerDir/.journal
 fi
 if [ ! -f $playerDir/.inventory ]
   then
@@ -102,7 +127,7 @@ function use()
 	local option=$2
 	clearScreen
 	echo "${YELLOW}Tip: For playing in Hard Mode, try to remember '. ./' followed by the name of the object to interact with.${RESTORE}"
-	"source $item $option"
+	source $item $option
 	return
 }
 function open()
@@ -111,7 +136,7 @@ function open()
 	local option=$2
 	clearScreen
 	echo "${YELLOW}Tip: For playing in Hard Mode, try to remember '. ./' followed by the name of the object to interact with.${RESTORE}"
-	"source $item $option"
+	source $item $option
 	return
 }
 function cd()
@@ -252,7 +277,7 @@ function cleanup()
   unset inventoryDir
   unset artDir
   unset initialInstructions
-  unset mainDir
+  # unset mainDir
   unset -f clearScreen
   unset -f cd
   unset -f open
@@ -282,7 +307,7 @@ function resetGame()
   clear
   builtin cd $mainDir
   rm -rf ./{.art,HQ,.objects,.player}
-  if [ ! -f ./.reset.tgz.bkup]
+  if [ ! -f ./.reset.tgz.bkup ]
     then
 	cp .reset.tgz .reset.tgz.bkup
   fi
@@ -299,7 +324,7 @@ function printMainText()
   echo $text
   return
 }
-# addInventory, this function adds an item to the inventory by moving its simlink from the room to the inventory directory
+# addInventory, this function adds an item to the inventory by moving it from the room to the inventory directory
 function addInventory()
 {
 	local objectName=$1
@@ -379,31 +404,6 @@ function unsetObjFunction
 }
 # Move player into HQ folder
 cd $mainDir/HQ
-# Display title
-# cat $artDir/title
-# Give initial ls and cd instructions so that player can either do the tutorial in "Training" folder or go straight to "Mission: Dissonance"
-initialInstructions="----------------------------------------------------------------------\n
-Linux Commands:\n
-Use 'ls' or 'ls -F' to look around.\n
-- The '-F' tells you more about what you're looking at:\n
--- Anything with '/' at the end is directory\n
--- Anything with '*' at the end is a script to run with 'use scriptName -{a|i|b|n}'\n
--- Files with no special character at the end are typically text that you can 'cat ./fileName'\n
-Use 'cd' to move. Try 'cd Training' and 'cd ..' to move back to HQ\n
-Use 'cat' to read contents. Try 'cat ./Profile.txt'\n
--- Encase files/directories with quotes if their names have spaces\n
-\n
-Game Commands:\n
-Use 'journal -r' to view your notes // 'journal -w' to write notes\n
-Use 'use' or 'open' to interact with objects. Ex. 'use flashlight -i'\n
-- Object options are:\n
--- '-a' for action (will perform task with object)\n
--- '-i' for inventory (if object can be carried)\n
--- '-b' for breaking (if object is breakable)\n
--- '-n' for notes (if object is noteworthy it will automatically be added to your journal)\n
-Use 'abortMission' to save your progress and quit the game.\n
-Use 'resetGame' to set the game back to default and quit\n
-----------------------------------------------------------------------\n"
+# Display prologue text
 cat $mainDir/HQ/Prologue.txt | less --window=4
-echo -e "Enter 'cd ./Training' to get started\n"
-echo -e $initialInstructions >> $playerDir/.journal
+echo -e $gameTip

@@ -1,0 +1,409 @@
+#!/bin/bash
+# Initialization script, contains all functions and initializes all global functions/variables needed for game
+# User types ". ./startMission" to start game
+# User types ". ./objectScriptName -option" or "source/use/open objectScriptName -option" to interact with objects in the rooms
+
+# Set Window and stty size
+# resize -s 32 77
+# stty rows 32
+# stty cols 77
+
+# Debug options
+if [[ $1 == "-x" ]]
+  then
+    set -x # to enable
+    set -o functrace # to enable
+#--------------------------------
+else
+    set +x # to disable
+    set +o functrace # to disable
+fi
+
+# Global Variables
+
+# mainDir, top level directory of game, obtained by running pwd command during first initialization
+mainDir="$(pwd)"
+# playerDir, location of hidden player directory containing journal file, stats, etc.
+playerDir=$mainDir/.player
+# inventoryDir, directory of symlinks to scripts of objects in inventory
+inventoryDir=$playerDir/.inventoryDir
+# objectDir, location of object scripts
+objectDir=$mainDir/.objects
+# artDir, location of art objects
+artDir=$mainDir/.art
+# originalPS1, saves original PS1 variable to be restored by abortMission() upon exit of game
+originalPS1=$PS1
+# text for .bash_prompt_command file depending on whether alive or dead
+bash_prompt_alive='GREEN="\[\\033[0;32m\]"\nCYAN="\[\\033[0;36m\]"\nRED="\[\\033[0;31m\]"\nPURPLE="\[\\033[0;35m\]"\nBROWN="\[\\033[0;33m\]"\nLIGHT_GRAY="\[\\033[0;37m\]"\nLIGHT_BLUE="\[\\033[1;34m\]"\nLIGHT_GREEN="\[\\033[1;32m\]"\nLIGHT_CYAN="\[\\033[1;36m\]"\nLIGHT_RED="\[\\033[1;31m\]"\nLIGHT_PURPLE="\[\\033[1;35m\]"\nYELLOW="\[\\033[1;33m\]"\nWHITE="\[\\033[1;37m\]"\nRESTORE="\[\\033[0m\]"\n\nexec $(heal)\nexec echo -e "[$(stats), Location:${CYAN}\W${RESTORE}]-\$ "'
+bash_prompt_restore="exec echo \"$originalPS1\""
+echo -e $bash_prompt_alive > $mainDir/.bash_prompt_command
+# sets PS1 variable to output of stats function to make prompt display stats
+function prompt_command()
+{
+	local __resetQuit=$1
+	if [[ "$__resetQuit" ]]
+	  then
+		export PS1=$(source $mainDir/.bash_prompt_command)
+		DEAD=1
+		resetGame
+	else
+		isDead
+		export PS1=$(source $mainDir/.bash_prompt_command)
+	fi
+}
+export PROMPT_COMMAND=prompt_command
+
+# Player files
+# Check if directories exist, if they do not exist uncompress .reset.tgz
+if [ ! -d $playerDir ] || [ ! -d $objectDir ] || [ ! -d $mainDir/HQ ] || [ ! -d $artDir ]
+  then
+	if [ ! -f ./.reset.tgz.bkup]
+	  then
+		cp .reset.tgz .reset.tgz.bkup
+	fi
+	tar -xzpf .reset.tgz .
+fi
+# .hp and .xp are created and initialized if the file don't exist. If the files exist, they are not reinitialized.
+if [ ! -f $playerDir/.hp ]
+  then
+    echo "100" > $playerDir/.hp
+fi
+if [ ! -f $playerDir/.xp ]
+  then
+    echo "0" > $playerDir/.xp
+fi
+# die function will kill player instantly
+function die()
+{
+  echo 0 > $playerDir/.hp
+}
+#Create empty .journal and .inventory files if they do not exist
+if [ ! -f $playerDir/.journal ]
+  then
+    touch $playerDir/.journal
+   # echo -e $initialInstructions >> $playerDir/.journal
+fi
+if [ ! -f $playerDir/.inventory ]
+  then
+    touch $playerDir/.inventory
+fi
+# Initialize all object functions of objects in inventory
+for objScript in $inventoryDir
+do
+	source $inventoryDir/$objScript --init
+done
+# Ready the user screen
+clear
+
+# Alias functions
+function use()
+{
+	local item=$1
+	local option=$2
+	clearScreen
+	echo "${YELLOW}Tip: For playing in Hard Mode, try to remember '. ./' followed by the name of the object to interact with.${RESTORE}"
+	"source $item $option"
+	return
+}
+function open()
+{
+	local item=$1
+	local option=$2
+	clearScreen
+	echo "${YELLOW}Tip: For playing in Hard Mode, try to remember '. ./' followed by the name of the object to interact with.${RESTORE}"
+	"source $item $option"
+	return
+}
+function cd()
+{
+	clearScreen
+	builtin cd "$@"
+	if [ -f ./.roomText ]
+	  then
+		cat ./.roomText | less
+	fi
+	return
+}
+function clearScreen()
+{
+	clear
+	cat $artDir/title
+	return
+}
+function adminView()
+{
+	clearScreen
+	ls -aR -I.git
+	return
+}
+# Functions
+# General
+# General functions called by the user
+
+# journal, the -r option prints the contents of the journal file to the terminal, the -w option opens the journal file in Vim
+function journal()
+{
+  clearScreen
+  local option=$1
+  case $option in
+    "-r"|r)
+      cat $playerDir/.journal | less
+      ;;
+    "-w"|w)
+      vim $playerDir/.journal
+      echo "$(cat $playerDir/.journal | wc -l)" > $playerDir/.xp
+      ;;
+    *)
+      echo "journal(-r or -w)"
+      ;;
+  esac
+  return
+}
+# stats, prints the game stats from the .hp and .xp files, xp is calculated through wc -l of the journal file
+function stats()
+{
+  echo "HP: ${GREEN}$(cat $playerDir/.hp)${RESTORE}, XP: ${GREEN}$(cat $playerDir/.xp)${RESTORE}"
+  return
+}
+# heal, this function adds 5 HP to the total every time it is run, to a maximum of 100 HP
+function heal()
+{ 
+  local maxHP=100
+  local currentHP=$(cat $playerDir/.hp)
+  if [ $currentHP -ge 1 ]
+     then
+ 	 if [ $(($maxHP - $currentHP)) -ge 5 ]
+ 	   then
+ 	     echo $(($currentHP + 5)) > $playerDir/.hp
+ 	 elif [ $(($maxHP - $currentHP)) -lt 5 ]
+ 	   then
+ 	     echo $(($currentHP + ($maxHP - $currentHP))) > $playerDir/.hp
+ 	 fi
+  fi
+  return
+}
+# isDead, checks to see if HP - 0 and runs cleanup function and quits game if this is the case
+function isDead()
+{
+  local currentHP=$(cat $playerDir/.hp)
+  if [ $currentHP -le 0 ]
+    then
+     clearScreen
+     local option=""
+     if [ ! $DEAD ]
+       then
+     		read -p "You have died. Would you like to keep trying? (Y/N) -> " option
+     		if [ $option = "Y" ] || [ $option = "y" ]
+		  then
+			echo "20" > $playerDir/.hp
+     		elif [ $option = "N" ] || [ $option = "n" ]
+		  then
+			echo -e $bash_prompt_restore > $mainDir/.bash_prompt_command
+			prompt_command q
+     		else
+		  echo "20" > $playerDir/.hp
+     		fi
+     fi
+  fi
+  return
+}
+#abortMission, cleans up all temporary directories and variables and exits the game
+function abortMission()
+{
+  clearScreen
+  local yn=""
+  read -p "Agent Ryann, are you sure you want to abort mission? (Y/N) -> " yn
+  case "$yn" in
+    Y|y)
+      echo "No problem, we have saved your progress."
+      cleanup
+      ;;
+    N|n)
+      echo "That's the spirit! Keep up the good work."
+      ;;
+     *)
+      ;;
+  esac
+  return
+}
+# cleanup, this function deletes all temporary global variables and files and exits the game
+function cleanup()
+{
+  PS1=$originalPS1
+  unset PROMPT_COMMAND
+  unset GREEN
+  unset CYAN
+  unset RED
+  unset PURPLE
+  unset BROWN
+  unset LIGHT_GRAY
+  unset LIGHT_BLUE
+  unset LIGHT_GREEN
+  unset LIGHT_CYAN
+  unset LIGHT_RED
+  unset LIGHT_PURPLE
+  unset YELLOW
+  unset WHITE
+  unset RESTORE
+  unset DEAD
+  builtin cd $mainDir
+  # unset originalPS1
+  unset playerDir
+  unset inventoryDir
+  unset artDir
+  unset initialInstructions
+  unset mainDir
+  unset -f clearScreen
+  unset -f cd
+  unset -f open
+  unset -f use
+  unset -f heal
+  unset -f isDead
+  unset -f stats
+  unset -f journal
+  unset -f adminView
+  unset -f abortMission
+  unset -f printMainText
+  unset -f addInventory
+  unset -f printErrorInventory
+  unset -f breakObject
+  unset -f printErrorUnbreakable
+  unset -f printErrorPlot
+  unset -f addJournalEntry
+  unset -f printErrorJournal
+  unset -f printObjectUsageMessage
+  unset -f resetGame
+  clear
+  return
+}
+# resetGame, this function creates a new game by setting all files and variables to default values and creating symlinks in default locations
+function resetGame()
+{
+  clear
+  builtin cd $mainDir
+  rm -rf ./{.art,HQ,.objects,.player}
+  if [ ! -f ./.reset.tgz.bkup]
+    then
+	cp .reset.tgz .reset.tgz.bkup
+  fi
+  tar -xzpf .reset.tgz .
+  cleanup
+  return
+}
+# Objects
+# These functions are used in object scripts
+# printMainText, this function runs when user types -a after object and prints the text associated with picking up the object; the text is established in the $mainText variable in the object script and passed to the function
+function printMainText()
+{
+  local text=$1
+  echo $text
+  return
+}
+# addInventory, this function adds an item to the inventory by moving its simlink from the room to the inventory directory
+function addInventory()
+{
+	local objectName=$1
+	local objectLinkPath=$2
+	# echo $objectName >> $playerDir/.inventory
+	# ln $objectDir/$objectName $inventoryDir/$objectName
+	if [ ! -f "$inventoryDir/$objectName" ]
+	then
+		mv $objectLinkPath $inventoryDir/$objectName && echo $objectName >> $playerDir/.inventory
+	else
+		echo "\"I already have that.\""
+	fi
+	return
+}
+# printErrorInventory, this function prints an error stating that the object cannot be added to the inventory
+function printErrorInventory()
+{
+  echo "${RED}\"Hmm, it doesn't seem like I can pick that up.\"${RESTORE}"
+  return
+}
+# breakObject, this function breaks an object by deleting its symlink in the room or inventory
+function breakObject()
+{
+	local objectName=$1
+	local objectLinkPath=$2
+	if [ -f $inventoryDir/$objectName ]
+	then
+		mv $inventoryDir/$objectName $objectDir/.brokenByUser/$objectName
+	else
+		mv $objectLinkPath $objectDir/.brokenByUser/$objectName
+	fi
+	return
+}
+# printErrorUnbreakable, this function prints an error stating that an object cannot be broken
+function printErrorUnbreakable()
+{
+  echo "${RED}\"Hmm, it doesn't seem like I can break that.\"${RESTORE}"
+  return
+}
+# printErrorPlot, this function prints an error stating that the object is necessary for the plot and cannot be broken
+function printErrorPlot()
+{
+  echo "${RED}\"I don't think I should break this. It might be useful later.\"${RESTORE}"
+  return
+}
+# addJournalEntry, this function adds an entry to the journal corresponding to the text passed to the function; this comes from the journalText variable in the object script
+function addJournalEntry()
+{
+  local text=$1
+  echo "\"$text\""
+  echo $text >> $playerDir/.journal
+  echo "$(cat $playerDir/.journal | wc -l)" > $playerDir/.xp
+  return
+}
+# printErrorJournal, this function prints an error stating that there is nothing to add to the journal about the specified object"
+function printErrorJournal()
+{
+  echo "${RED}\"I don't see anything interesting about this object.\"${RESTORE}"
+  return
+}
+# printObjectUsageMessage, this function prints a generic usage message for objects when the user types an invalid option
+function printObjectUsageMessage()
+{
+  local objectName=$1
+  echo "${YELLOW}$objectName ('-a' or '-i' or '-b' or '-n')${RESTORE}"
+  return
+}
+# unsetObjFunction, this function checks if the object passed to it exists in the inventory, and if not, unsets the object function corresponding to the object
+function unsetObjFunction
+{
+	local object=$1
+	if [ ! -f "$inventoryDir/$object" ]
+	then
+		unset -f $object
+	fi
+	return
+}
+# Move player into HQ folder
+cd $mainDir/HQ
+# Display title
+# cat $artDir/title
+# Give initial ls and cd instructions so that player can either do the tutorial in "Training" folder or go straight to "Mission: Dissonance"
+initialInstructions="----------------------------------------------------------------------\n
+Linux Commands:\n
+Use 'ls' or 'ls -F' to look around.\n
+- The '-F' tells you more about what you're looking at:\n
+-- Anything with '/' at the end is directory\n
+-- Anything with '*' at the end is a script to run with 'use scriptName -{a|i|b|n}'\n
+-- Files with no special character at the end are typically text that you can 'cat ./fileName'\n
+Use 'cd' to move. Try 'cd Training' and 'cd ..' to move back to HQ\n
+Use 'cat' to read contents. Try 'cat ./Profile.txt'\n
+-- Encase files/directories with quotes if their names have spaces\n
+\n
+Game Commands:\n
+Use 'journal -r' to view your notes // 'journal -w' to write notes\n
+Use 'use' or 'open' to interact with objects. Ex. 'use flashlight -i'\n
+- Object options are:\n
+-- '-a' for action (will perform task with object)\n
+-- '-i' for inventory (if object can be carried)\n
+-- '-b' for breaking (if object is breakable)\n
+-- '-n' for notes (if object is noteworthy it will automatically be added to your journal)\n
+Use 'abortMission' to save your progress and quit the game.\n
+Use 'resetGame' to set the game back to default and quit\n
+----------------------------------------------------------------------\n"
+cat $mainDir/HQ/Prologue.txt | less --window=4
+echo -e "Enter 'cd ./Training' to get started\n"
+echo -e $initialInstructions >> $playerDir/.journal

@@ -1,0 +1,63 @@
+#!/bin/bash
+# This is the template file for any of the objects in the game.
+# All object code is contained within the object function. Upon the sourcing of the script, this function is initialized. When sourcing a script with an argument, the function is called with the argument. If the item is not added to the inventory, the function is uninitialized, as well as all outside variables in object script. Otherwise, the function remains initialized.
+# When object is in inventory, user invokes object function directly, otherwise user sources object script to use object
+# startMission executes all object scripts in inventory directory, without options, upon loading of game, in order to reinitialize all object functions of objects in inventory
+
+# scriptInput contains argument user specifies when running script directly, which is passed to the object function
+scriptInput=$1
+
+# Object function, this must have the same name as objectName
+function flashlight2
+{
+	# Object variables
+	# mainText should contain the text that appears when the object is first used
+	local mainText="\"Great, this flashlight still works. I should add this to my inventory with flashlight -i.\""
+	# If the object is notable and can be added to the journal, then journalText can contain either its own text or a subset of text grepped or gawked from mainText; otherwise, it contains an empty string
+	local journalText="I can shine light on hidden items with 'flashlight' or 'ls -aF'."
+	# scriptPath contains the path of the script, found by the PWD variable; do not use variable when running function directly
+	local scriptPath=$PWD
+	# scriptName contains the name of the object script
+	local scriptName="flashlight2"
+	# objectName contains the name of the object/object function, which matches what appears in the inventory. This should be a unique name, and is usually the same as scriptName, unless the name of the object in the inventory must be different from the name of its script
+	local objectName="flashlight2"
+	
+	option=$1
+	case option in
+		"-a")
+			printMainText "$mainText"
+			# Insert the commands associated with using the object here
+			ls -Af
+			unsetObjFunction "$objectName"
+			;;
+		"-i")
+			# If the object can be added to the inventory, uncomment addInventory, otherwise uncomment printErrorInventory
+			addInventory "$objectName" "$scriptPath/$scriptName"
+			#printErrorInventory
+			;;
+		"-b")
+			# If the object is breakable, uncomment breakObject. If the object cannot be broken, uncomment printErrorUnbreakable, or if the object is necessary to the plot and should not be breakable, uncomment printErrorPlot
+			breakObject "$objectName" "$scriptPath/scriptName"
+			#printErrorUnbreakable
+			#printErrorPlot
+			unsetObjFunction "$objectName"
+			;;
+		"-n")
+			# If the object is noteworthy, uncomment addJournalEntry, otherwise uncomment printErrorJournal
+			addJournalEntry "$journalText"
+			#printErrorJournal
+			unsetObjFunction "$objectName"
+			;;
+		"--init")
+			# This option is only run by startMission upon first run when initializing all object functions in inventory; dummy option that immediately quits case statement in order for script to initialize function without printing usage statement
+	 		;;
+		*)
+			printObjectUsageMessage "$objectName"
+			unsetObjFunction "$objectName"
+			;;
+		esac
+	return
+}
+
+objectTemplate $scriptInput
+unset scriptInput

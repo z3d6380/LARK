@@ -123,7 +123,7 @@ function use()
 	local option=$2
 	clearScreen
 	echo "${YELLOW}Tip: For playing in Hard Mode, try to remember '. ./' followed by the name of the object to interact with.${RESTORE}"
-	"source $item $option"
+	source $item $option
 	return
 }
 function open()
@@ -132,7 +132,7 @@ function open()
 	local option=$2
 	clearScreen
 	echo "${YELLOW}Tip: For playing in Hard Mode, try to remember '. ./' followed by the name of the object to interact with.${RESTORE}"
-	"source $item $option"
+	source $item $option
 	return
 }
 function cd()

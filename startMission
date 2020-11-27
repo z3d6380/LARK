@@ -87,7 +87,11 @@ if [ ! -f $playerDir/.inventory ]
   then
     touch $playerDir/.inventory
 fi
-
+# Initialize all object functions of objects in inventory
+for objScript in $inventoryDir
+do
+	source $inventoryDir/$objScript --init
+done
 # Ready the user screen
 clear
 
@@ -298,12 +302,17 @@ function printMainText()
 # addInventory, this function adds an item to the inventory by moving its simlink from the room to the inventory directory
 function addInventory()
 {
-  local objectName=$1
-  local objectLinkPath=$2
-  # echo $objectName >> $playerDir/.inventory
-# ln $objectDir/$objectName $inventoryDir/$objectName
-  mv $objectLinkPath $inventoryDir/$objectName && echo $objectName >> $playerDir/.inventory
-  return
+	local objectName=$1
+	local objectLinkPath=$2
+	# echo $objectName >> $playerDir/.inventory
+	# ln $objectDir/$objectName $inventoryDir/$objectName
+	if [ ! -f "$inventoryDir/$objectName" ]
+	then
+		mv $objectLinkPath $inventoryDir/$objectName && echo $objectName >> $playerDir/.inventory
+	else
+		echo "\"I already have that.\""
+	fi
+	return
 }
 # printErrorInventory, this function prints an error stating that the object cannot be added to the inventory
 function printErrorInventory()
@@ -314,10 +323,15 @@ function printErrorInventory()
 # breakObject, this function breaks an object by deleting its symlink in the room or inventory
 function breakObject()
 {
-  local objectName=$1
-  local objectLinkPath=$2
-  mv $objectLinkPath $objectDir/.brokenByUser/$objectName
-  return
+	local objectName=$1
+	local objectLinkPath=$2
+	if [ -f $inventoryDir/$objectName ]
+	then
+		mv $inventoryDir/$objectName $objectDir/.brokenByUser/$objectName
+	else
+		mv $objectLinkPath $objectDir/.brokenByUser/$objectName
+	fi
+	return
 }
 # printErrorUnbreakable, this function prints an error stating that an object cannot be broken
 function printErrorUnbreakable()
@@ -352,6 +366,16 @@ function printObjectUsageMessage()
   local objectName=$1
   echo "${YELLOW}$objectName ('-a' or '-i' or '-b' or '-n')${RESTORE}"
   return
+}
+# unsetObjFunction, this function checks if the object passed to it exists in the inventory, and if not, unsets the object function corresponding to the object
+function unsetObjFunction
+{
+	local object=$1
+	if [ ! -f "$inventoryDir/$object" ]
+	then
+		unset -f $object
+	fi
+	return
 }
 # Move player into HQ folder
 cd $mainDir/HQ

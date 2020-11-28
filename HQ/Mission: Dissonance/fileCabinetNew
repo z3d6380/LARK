@@ -60,5 +60,5 @@ function fileCabinet
 	return
 }
 
-fileCabinet $scriptInput:
+fileCabinet $scriptInput
 unset scriptInput

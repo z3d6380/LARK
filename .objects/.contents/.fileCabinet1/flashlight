@@ -37,7 +37,7 @@ function flashlight
 			;;
 		"-b")
 			# If the object is breakable, uncomment breakObject. If the object cannot be broken, uncomment printErrorUnbreakable, or if the object is necessary to the plot and should not be breakable, uncomment printErrorPlot
-			#breakObject "$objectName" "$scriptPath/scriptName"
+			#breakObject "$objectName" "$scriptPath/$scriptName"
 			#printErrorUnbreakable
 			printErrorPlot
 			unsetObjFunction "$objectName"

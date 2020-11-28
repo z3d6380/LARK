@@ -162,7 +162,7 @@ function cd()
 function clearScreen()
 {
 	clear
-	cat $artDir/title
+	source $artDir/title
 	return
 }
 function adminView()

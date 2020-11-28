@@ -333,11 +333,13 @@ function addInventory()
 {
 	local objectName=$1
 	local objectLinkPath=$2
+	echo $objectName
+	echo $objectLinkPath
 	# echo $objectName >> $playerDir/.inventory
 	# ln $objectDir/$objectName $inventoryDir/$objectName
 	if [ ! -f "$inventoryDir/$objectName" ]
 	then
-		mv $objectLinkPath $inventoryDir/$objectName && echo $objectName >> $playerDir/.inventory
+		mv "$objectLinkPath" "$inventoryDir/$objectName" && echo $objectName >> "$playerDir/.inventory"
 	else
 		echo "\"I already have that.\""
 	fi
@@ -354,11 +356,11 @@ function breakObject()
 {
 	local objectName=$1
 	local objectLinkPath=$2
-	if [ -f $inventoryDir/$objectName ]
+	if [ -f "$inventoryDir/$objectName" ]
 	then
-		mv $inventoryDir/$objectName $objectDir/.brokenByUser/$objectName
+		mv "$inventoryDir/$objectName" "$objectDir/.brokenByUser/$objectName"
 	else
-		mv $objectLinkPath $objectDir/.brokenByUser/$objectName
+		mv "$objectLinkPath" "$objectDir/.brokenByUser/$objectName"
 	fi
 	return
 }

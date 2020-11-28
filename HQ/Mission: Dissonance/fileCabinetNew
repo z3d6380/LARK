@@ -23,7 +23,7 @@ function fileCabinet
 	local objectName="fileCabinet"
 	
 	option=$1
-	case option in
+	case $option in
 		"-a")
 			printMainText "$mainText"
 			# Insert the commands associated with using the object here

@@ -15,7 +15,7 @@ then
 	# perform these steps
 	rm .reset.tgz
 	tar --exclude='./startMission' --exclude='./.reset.tgz.bkup' --exclude='./.git' --exclude='./.bash_prompt_command*' --exclude='.repackageReset' --exclude='./README.md' --exclude='./LICENSE' -czpvf .reset.tgz .
-	rm -rf ./{.art,HQ,.objects,.player,.reset.tgz.bkup}
+	rm -rf ./{.art,HQ,.objects,.player,.reset.tgz.bkup,.rooms}
 	cp .reset.tgz .reset.tgz.bkup
 	tar -xzpvf .reset.tgz .
 elif [[ $option == "N" ]] || [[ $option == 'n' ]]

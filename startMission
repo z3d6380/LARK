@@ -56,6 +56,8 @@ inventoryDir=$playerDir/.inventoryDir
 objectDir=$mainDir/.objects
 # artDir, location of art objects
 artDir=$mainDir/.art
+# roomDir, location of room elements, such as roomText
+roomDir=$mainDir/.rooms
 # originalPS1, saves original PS1 variable to be restored by abortMission() upon exit of game
 originalPS1=$PS1
 # text for .bash_prompt_command file depending on whether alive or dead
@@ -143,10 +145,18 @@ function cd()
 {
 	clearScreen
 	builtin cd "$@"
-	if [ -f ./.roomText ]
-	  then
-		cat ./.roomText | less
-	fi
+	for room in $roomDir/*
+	do
+		local checkRoom=$(eval "printf '%q\n' \"${PWD##*/}\"")
+		local room=$(eval "printf '%q\n' \"${room##*/}\"")
+		if [[ $checkRoom == $room ]]
+		then
+			if [ -f $roomDir/$room/roomText ]
+			  then
+				cat $roomDir/$room/roomText | less
+			fi
+		fi
+	done
 	return
 }
 function clearScreen()
@@ -306,7 +316,7 @@ function resetGame()
 {
   clear
   builtin cd $mainDir
-  rm -rf ./{.art,HQ,.objects,.player}
+  rm -rf ./{.art,HQ,.objects,.player,.rooms}
   if [ ! -f ./.reset.tgz.bkup ]
     then
 	cp .reset.tgz .reset.tgz.bkup

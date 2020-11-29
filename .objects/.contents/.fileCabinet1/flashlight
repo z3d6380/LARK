@@ -23,7 +23,7 @@ function flashlight
 	local objectName="flashlight"
 	
 	option=$1
-	case option in
+	case $option in
 		"-a")
 			printMainText "$mainText"
 			# Insert the commands associated with using the object here
@@ -37,9 +37,9 @@ function flashlight
 			;;
 		"-b")
 			# If the object is breakable, uncomment breakObject. If the object cannot be broken, uncomment printErrorUnbreakable, or if the object is necessary to the plot and should not be breakable, uncomment printErrorPlot
-			breakObject "$objectName" "$scriptPath/scriptName"
+			#breakObject "$objectName" "$scriptPath/$scriptName"
 			#printErrorUnbreakable
-			#printErrorPlot
+			printErrorPlot
 			unsetObjFunction "$objectName"
 			;;
 		"-n")
@@ -51,6 +51,10 @@ function flashlight
 		"--init")
 			# This option is only run by startMission upon first run when initializing all object functions in inventory; dummy option that immediately quits case statement in order for script to initialize function without printing usage statement
 	 		;;
+		"--unset")
+			# This option is used by cleanup() to unset the object function
+			unsetObjFunction "$objectName"
+			;;
 		*)
 			printObjectUsageMessage "$objectName"
 			unsetObjFunction "$objectName"

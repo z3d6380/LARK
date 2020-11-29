@@ -119,9 +119,9 @@ if [ ! -f $playerDir/.inventory ]
     touch $playerDir/.inventory
 fi
 # Initialize all object functions of objects in inventory
-for objScript in $inventoryDir
+for objScript in $inventoryDir/*
 do
-	source $inventoryDir/$objScript --init
+	source $objScript --init
 done
 # Ready the user screen
 clear

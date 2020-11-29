@@ -27,7 +27,7 @@ function flashlight
 		"-a")
 			printMainText "$mainText"
 			# Insert the commands associated with using the object here
-			ls -Af
+			ls -aF
 			unsetObjFunction "$objectName"
 			;;
 		"-i")

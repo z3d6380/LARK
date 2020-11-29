@@ -64,5 +64,5 @@ function .fileCabinetHidden
 	return
 }
 
-.fileCabinetHidden $scriptInput:
+.fileCabinetHidden $scriptInput
 unset scriptInput

@@ -1,0 +1,15 @@
+# Packages #
+############
+# It's better that we repackage the game ourselves after we rebase to main, in order to avoid the .reset.tgz file from overwriting each other's work with old files.
+.reset.tgz
+.reset.tgz.bkup
+
+# OS generated files #
+######################
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db

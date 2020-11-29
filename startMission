@@ -281,9 +281,9 @@ function cleanup()
   unset WHITE
   unset RESTORE
   unset DEAD
-  for objectScript in $inventoryDir
+  for objectScript in "$inventoryDir"
   do
-    unset -f $objectScript
+    "$objectScript --unset"
   done
   builtin cd $mainDir
   # unset originalPS1
@@ -311,6 +311,7 @@ function cleanup()
   unset -f addJournalEntry
   unset -f printErrorJournal
   unset -f printObjectUsageMessage
+  unset -f unsetObjFunction
   unset -f resetGame
   clear
   return

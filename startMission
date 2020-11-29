@@ -3,6 +3,10 @@
 # User types ". ./startMission" to start game
 # User types ". ./objectScriptName -option" or "source/use/open objectScriptName -option" to interact with objects in the rooms
 
+# This if statement wraps this whole file to prevent the game from being played without a .reset.tgz file present.  It will let user know to run the .repackageReset script in order to do so.
+if [ -f ./.reset.tgz ]
+then
+
 # Set Window and stty size
 # resize -s 32 77
 # stty rows 32
@@ -417,3 +421,9 @@ cd $mainDir/HQ
 # Display prologue text
 cat $mainDir/HQ/Prologue.txt | less --window=4
 echo -e $gameTip
+
+###### Else statement for if statement that wraps this whole file.  Protection against the .reset.tgz file from overwriting newer files when game reset occurs
+else
+	echo "Please run the repackage script as follows, then try launching the game again."
+	echo "Run script -> ./.repackageReset"
+fi

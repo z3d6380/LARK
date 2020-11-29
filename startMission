@@ -344,8 +344,6 @@ function addInventory()
 {
 	local objectName=$1
 	local objectLinkPath=$2
-	echo $objectName
-	echo $objectLinkPath
 	# echo $objectName >> $playerDir/.inventory
 	# ln $objectDir/$objectName $inventoryDir/$objectName
 	if [ ! -f "$inventoryDir/$objectName" ]

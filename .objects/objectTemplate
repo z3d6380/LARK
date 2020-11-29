@@ -53,7 +53,7 @@ function objectTemplate
 	 		;;
 		"--unset")
 			# This option is used by cleanup() to unset the object function
-			unsetObjFunction "$objectName"
+			unsetObjFunction "$objectName" -f
 			;;
 		*)
 			printObjectUsageMessage "$objectName"

@@ -281,9 +281,9 @@ function cleanup()
   unset WHITE
   unset RESTORE
   unset DEAD
-  for objectScript in "$inventoryDir"
+  for objectScript in ${inventoryDir}/*
   do
-    "$objectScript --unset"
+    source ${objectScript} --unset
   done
   builtin cd $mainDir
   # unset originalPS1
@@ -344,8 +344,6 @@ function addInventory()
 {
 	local objectName=$1
 	local objectLinkPath=$2
-	echo $objectName
-	echo $objectLinkPath
 	# echo $objectName >> $playerDir/.inventory
 	# ln $objectDir/$objectName $inventoryDir/$objectName
 	if [ ! -f "$inventoryDir/$objectName" ]
@@ -409,13 +407,21 @@ function printObjectUsageMessage()
   echo "${YELLOW}$objectName ('-a' or '-i' or '-b' or '-n')${RESTORE}"
   return
 }
-# unsetObjFunction, this function checks if the object passed to it exists in the inventory, and if not, unsets the object function corresponding to the object
+# unsetObjFunction, this function checks if the object passed to it exists in the inventory, and if not, unsets the object function corresponding to the object. -f forces unset of object function
 function unsetObjFunction
 {
 	local object=$1
-	if [ ! -f "$inventoryDir/$object" ]
+	local forceOption=$2
+	# echo "$object"
+	# echo "$forceOption"
+	if [ ! "$forceOption" == "-f" ]
 	then
-		unset -f $object
+		if [ ! -f "$inventoryDir/$object" ]
+		then
+			unset -f "$object"
+		fi
+	else
+		unset -f "$object"
 	fi
 	return
 }

@@ -62,10 +62,12 @@ objectDir=$mainDir/.objects
 artDir=$mainDir/.art
 # roomDir, location of room elements, such as roomText
 roomDir=$mainDir/.rooms
+# missionsDir, location of missions (challenges, files, and other interactive elements)
+missionsDir=$mainDir/.missions
 # originalPS1, saves original PS1 variable to be restored by abortMission() upon exit of game
 originalPS1=$PS1
 # text for .bash_prompt_command file depending on whether alive or dead
-bash_prompt_alive='GREEN="\[\\033[0;32m\]"\nCYAN="\[\\033[0;36m\]"\nRED="\[\\033[0;31m\]"\nPURPLE="\[\\033[0;35m\]"\nBROWN="\[\\033[0;33m\]"\nLIGHT_GRAY="\[\\033[0;37m\]"\nLIGHT_BLUE="\[\\033[1;34m\]"\nLIGHT_GREEN="\[\\033[1;32m\]"\nLIGHT_CYAN="\[\\033[1;36m\]"\nLIGHT_RED="\[\\033[1;31m\]"\nLIGHT_PURPLE="\[\\033[1;35m\]"\nYELLOW="\[\\033[1;33m\]"\nWHITE="\[\\033[1;37m\]"\nRESTORE="\[\\033[0m\]"\n\nexec $(heal)\nexec echo -e "[$(stats), Location:${CYAN}\W${RESTORE}]-\$ "'
+bash_prompt_alive='GREEN="\[\\033[0;32m\]"\nCYAN="\[\\033[0;36m\]"\nRED="\[\\033[0;31m\]"\nPURPLE="\[\\033[0;35m\]"\nBROWN="\[\\033[0;33m\]"\nLIGHT_GRAY="\[\\033[0;37m\]"\nLIGHT_BLUE="\[\\033[1;34m\]"\nLIGHT_GREEN="\[\\033[1;32m\]"\nLIGHT_CYAN="\[\\033[1;36m\]"\nLIGHT_RED="\[\\033[1;31m\]"\nLIGHT_PURPLE="\[\\033[1;35m\]"\nYELLOW="\[\\033[1;33m\]"\nWHITE="\[\\033[1;37m\]"\nRESTORE="\[\\033[0m\]"\n\nexec $(heal)\nexec echo -e "[$(stats), Location:${CYAN}\W${RESTORE}]\n$(countdown)-\$ "'
 bash_prompt_restore="exec echo \"$originalPS1\""
 echo -e $bash_prompt_alive > $mainDir/.bash_prompt_command
 # sets PS1 variable to output of stats function to make prompt display stats
@@ -86,7 +88,7 @@ export PROMPT_COMMAND=prompt_command
 
 # Player files
 # Check if directories exist, if they do not exist uncompress .reset.tgz
-if [ ! -d $playerDir ] || [ ! -d $objectDir ] || [ ! -d $mainDir/HQ ] || [ ! -d $artDir ]
+if [ ! -d $playerDir ] || [ ! -d $objectDir ] || [ ! -d $mainDir/HQ ] || [ ! -d $artDir ] || [ ! -d $missionsDir ]
   then
 	if [ ! -f ./.reset.tgz.bkup ]
 	  then
@@ -145,19 +147,25 @@ function open()
 	source $item $option
 	return
 }
-function cd()
+function cd() # custom cd function that allows for roomText to be displayed, timer-triggers to be set off, etc, all based on the room entered.
 {
 	clearScreen
 	builtin cd "$@"
 	for room in $roomDir/*
 	do
-		local checkRoom=$(eval "printf '%q\n' \"${PWD##*/}\"")
-		local room=$(eval "printf '%q\n' \"${room##*/}\"")
-		if [[ $checkRoom == $room ]]
+		local checkRoom="$(eval "printf '%q\n' \"${PWD##*/}\"")"
+		local room="$(eval "printf '%q\n' \"${room##*/}\"")"
+		if [[ "$checkRoom" == "$room" ]]
 		then
-			if [ -f $roomDir/$room/roomText ]
+			# echo "$checkRoom"
+			# echo "$room"
+			if [ -f $roomDir/"$room"/roomText ]
 			  then
-				cat $roomDir/$room/roomText | less
+				cat $roomDir/"$room"/roomText | less
+				if [[ "$checkRoom" == "Dissonance" ]]
+				  then
+					final_time=$(date -d '+ 15 minutes' +%s) # starts final countdown in last mission
+				fi
 			fi
 		fi
 	done
@@ -174,6 +182,22 @@ function adminView()
 	clearScreen
 	ls -aR -I.git
 	return
+}
+# countdown timer for final mission.  Will start upon entering room.
+# final_time gets set when cd into final room completes
+function countdown()
+{
+if [[ ! -z "$final_time" ]]
+  then
+	local time_now=$(date +%s)
+	local time_left=$(($final_time - $time_now))
+	printf "${YELLOW}<<<Countdown:${RESTORE} ${LIGHT_RED}%02d:%02d${RESTORE}${YELLOW}>>>${RESTORE}" $((($time_left % 3600) / 60)) $(($time_left % 60)) # display time left in PS1 prompt
+	if [[ $time_left -le 0 ]]
+	  then
+		die
+	fi
+fi
+return
 }
 # Functions
 # General
@@ -255,6 +279,7 @@ function abortMission()
   case "$yn" in
     Y|y)
       echo "No problem, we have saved your progress."
+      sleep 3
       cleanup
       ;;
     N|n)
@@ -294,6 +319,8 @@ function cleanup()
   unset playerDir
   unset inventoryDir
   unset artDir
+  unset missionsDir
+  unset final_time
   unset initialInstructions
   # unset mainDir
   unset -f clearScreen
@@ -316,6 +343,7 @@ function cleanup()
   unset -f printErrorJournal
   unset -f printObjectUsageMessage
   unset -f unsetObjFunction
+  unset -f countdown
   unset -f resetGame
   clear
   return
@@ -325,7 +353,7 @@ function resetGame()
 {
   clear
   builtin cd $mainDir
-  rm -rf ./{.art,HQ,.objects,.player,.rooms}
+  rm -rf ./{.art,HQ,.objects,.player,.rooms,.missions}
   if [ ! -f ./.reset.tgz.bkup ]
     then
 	cp .reset.tgz .reset.tgz.bkup

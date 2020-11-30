@@ -7,28 +7,9 @@ that you've learned the following Linux Commands:
 2) Using 'cd {locationName}' to move into another location
 3) Using 'cat {fileName}' to read a file
 
-You've also learned that you have a journal that you can read
-with 'journal -r' or write to with 'journal -w'.
+Now go and open the 2nd text file in this room with the vim
+text editor by issuing the following command:
 
-Although mentioned in the journal, we think it is important to
-stress that you understand how to interact with objects.
-
-First, when you issue the 'ls -F' command, you will see interactive
-objects with a '*' at the end of the name.  When you see objects
-like that, you can interact with them in the following ways:
-
-1) 'source ./{fileName} -option' Linux command for sourcing scripts
-2) '. ./{fileName} -option' Linux command for sourcing scripts
-3) 'open ./{fileName} -option' Game command
-4) 'use ./{fileName} -option' Game command
-
-To complete this training we need you to interact with an object
-that will unlock your first mission back in HQ.  Once you run it,
-you will need to 'cd' back to HQ.  Remember that 'cd ..' will do
-so, and that the '..' is an alias for "parent directory".
-
-Now go and interact with the object in this room named 'Graduation':
-
-'. ./Graduation -a'
+'vim vim_thisFileSecond.txt'
 
 -HQ

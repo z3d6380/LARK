@@ -8,7 +8,7 @@
 scriptInput=$1
 
 # Object function, this must have the same name as objectName
-function objectTemplate
+function Graduation
 {
 	# Object variables
 	# mainText should contain the text that appears when the object is first used
@@ -64,5 +64,5 @@ function objectTemplate
 	return
 }
 
-objectTemplate $scriptInput
+Graduation $scriptInput
 unset scriptInput

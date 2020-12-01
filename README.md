@@ -15,6 +15,9 @@ Learn quick and think fast, the outcome of the Cold War and the fate of the worl
 1. Unzip the redWinter-{verion}.tgz file to any directory with write permissions by typing 'tar -xzpvf redWinter-{version}.tgz' followed by the pathname of the directory to extract it to.
 2. Then, navigate to the directory that contains the game and type '. ./startMission' or 'source ./startMission'
 
+# Easy and Hard Mode
+Throughout the game, there will be some commands where you have an option to type either a user-friendly, abstracted version of the command or the real command used in Unix and Linux. Your choice of which command to use makes no difference in the game, but it is recommended to practice using the Linux commands in order to best learn how to use the Linux shell.
+
 # The Development Team
 
 - John Bodoh

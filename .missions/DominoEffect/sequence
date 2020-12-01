@@ -1,0 +1,77 @@
+#!/bin/bash
+# This is the template file for any of the objects in the game.
+# All object code is contained within the object function. Upon the sourcing of the script, this function is initialized. When sourcing a script with an argument, the function is called with the argument. If the item is not added to the inventory, the function is uninitialized, as well as all outside variables in object script. Otherwise, the function remains initialized.
+# When object is in inventory, user invokes object function directly, otherwise user sources object script to use object
+# startMission executes all object scripts in inventory directory, without options, upon loading of game, in order to reinitialize all object functions of objects in inventory
+
+# scriptInput contains argument user specifies when running script directly, which is passed to the object function
+scriptInput=$1
+
+# Object function, this must have the same name as objectName
+function sequence
+{
+	# Object variables
+	# mainText should contain the text that appears when the object is first used
+	local mainText=""
+	# If the object is notable and can be added to the journal, then journalText can contain either its own text or a subset of text grepped or gawked from mainText; otherwise, it contains an empty string
+	local journalText=""
+	# scriptPath contains the path of the script, found by the PWD variable; do not use variable when running function directly
+	local scriptPath=$PWD
+	# scriptName contains the name of the object script
+	local scriptName="sequence"
+	# objectName contains the name of the object/object function, which matches what appears in the inventory. This should be a unique name, and is usually the same as scriptName, unless the name of the object in the inventory must be different from the name of its script
+	local objectName="sequence"
+	
+	option=$1
+	case $option in
+		"-a")
+			# printMainText "$mainText"
+			# Insert the commands associated with using the object here
+			echo -e "To unveil hidden secrets,\nand protect the lands across the sea,\nyou must decode this sequence:\n2, 3, 5, 9, 17, ___."
+			read -p "-> " code
+			if [[ "$code" == 33 ]]
+			  then
+				cp -a $missionsDir/"OneMansGarbage"/. ./"OneMansGarbage"
+				echo "\"That worked, I should note this! And it looks like there is a new directory in here.\""
+			else
+				echo "SEQUENCE INVALID."
+			fi
+			unsetObjFunction "$objectName"
+			;;
+		"-i")
+			# If the object can be added to the inventory, uncomment addInventory, otherwise uncomment printErrorInventory
+			#addInventory "$objectName" "$scriptPath/$scriptName"
+			printErrorInventory
+			unsetObjFunction "$objectName"
+			;;
+		"-b")
+			# If the object is breakable, uncomment breakObject. If the object cannot be broken, uncomment printErrorUnbreakable, or if the object is necessary to the plot and should not be breakable, uncomment printErrorPlot
+			#breakObject "$objectName" "$scriptPath/$scriptName"
+			printErrorUnbreakable
+			#printErrorPlot
+			unsetObjFunction "$objectName"
+			;;
+		"-n")
+			# If the object is noteworthy, uncomment addJournalEntry, otherwise uncomment printErrorJournal
+			#addJournalEntry "$journalText"
+			#printErrorJournal
+			echo "\"No need to write about this program in my journal, but maybe there is something that can help me solve this program.\""
+			unsetObjFunction "$objectName"
+			;;
+		"--init")
+			# This option is only run by startMission upon first run when initializing all object functions in inventory; dummy option that immediately quits case statement in order for script to initialize function without printing usage statement
+	 		;;
+		"--unset")
+			# This option is used by cleanup() to unset the object function
+			unsetObjFunction "$objectName" -f
+			;;
+		*)
+			printObjectUsageMessage "$objectName"
+			unsetObjFunction "$objectName"
+			;;
+		esac
+	return
+}
+
+sequence $scriptInput
+unset scriptInput

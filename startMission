@@ -149,8 +149,17 @@ function open()
 }
 function cd() # custom cd function that allows for roomText to be displayed, timer-triggers to be set off, etc, all based on the room entered.
 {
-	clearScreen
+local arg1=$1	
+clearScreen
+if [[ $arg1 == ~ ]] || [[ "$arg1" == "/" ]]
+  then
+	builtin cd "$mainDir/HQ"
+elif [ "$PWD" == "$mainDir/HQ" -a "$arg1" == ".." ]
+  then
+	abortMission
+else
 	builtin cd "$@"
+fi
 	for room in $roomDir/*
 	do
 		local checkRoom="$(eval "printf '%q\n' \"${PWD##*/}\"")"
@@ -162,7 +171,7 @@ function cd() # custom cd function that allows for roomText to be displayed, tim
 			if [ -f $roomDir/"$room"/roomText ]
 			  then
 				cat $roomDir/"$room"/roomText | less
-				if [[ "$checkRoom" == "Dissonance" ]]
+				if [[ "$checkRoom" == "TheFinalCountdown" ]]
 				  then
 					final_time=$(date -d '+ 15 minutes' +%s) # starts final countdown in last mission
 				fi
@@ -170,6 +179,41 @@ function cd() # custom cd function that allows for roomText to be displayed, tim
 		fi
 	done
 	return
+}
+function ping() # custom ping for safety of players and use in the game
+{
+	local IP=$1
+	if [[ -z $IP ]] # check if zero length variable
+	  then
+		echo "In order to ping, you must issue the command 'ping xxx.xxx.xxx.xxx', where 'x' reprsents a digit in the IP address."
+	elif [[ "$IP" == "88.87.75.164" ]]
+	  then
+		echo "PING boreas.relcom.su ($IP) 56(84) bytes of data."
+		sleep 1
+		echo "64 bytes from boreas.relcom.su ($IP): icmp_seq=1 ttl=115 time=34.3 ms"
+		sleep 1
+		echo "64 bytes from boreas.relcom.su ($IP): icmp_seq=1 ttl=115 time=46.7 ms"
+		sleep 1
+		echo "64 bytes from boreas.relcom.su ($IP): icmp_seq=1 ttl=115 time=33.8 ms"
+		sleep 1
+		echo "64 bytes from boreas.relcom.su ($IP): icmp_seq=1 ttl=115 time=52.1 ms"
+		sleep 0.5
+		echo "--- boreas.relcom.su ($IP) ping statistics ---"
+		echo "4 packets transmitted, 4 received, 0% packet loss, time 155ms"
+	else
+		echo "PING ($IP) 56(84) bytes of data."
+		sleep 2
+		echo "Request timed out."
+                sleep 2
+                echo "Request timed out."
+                sleep 2
+                echo "Request timed out."
+                sleep 2
+                echo "Request timed out."
+		sleep 0.5
+		echo "--- boreas.relcom.su ($IP) ping statistics ---"
+                echo "4 packets transmitted, 0 received, 100% packet loss, time 4375ms"
+	fi
 }
 function clearScreen()
 {
@@ -325,6 +369,7 @@ function cleanup()
   # unset mainDir
   unset -f clearScreen
   unset -f cd
+  unset -f ping
   unset -f open
   unset -f use
   unset -f heal

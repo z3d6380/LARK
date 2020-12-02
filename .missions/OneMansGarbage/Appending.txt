@@ -1,0 +1,39 @@
+Appending:
+
+Appending some text, or contents in a file, is simply transferring said text
+to another file. Using the cat command on the new file will display the text
+that you transferred.
+----------------------------------------------------------------------------
+Syntax:
+
+To append a file, you will need to use '>>' to direct the output of
+the 'cat' command to the end of a file.
+An example Command Line is as follows:
+
+'cat Original File >> NewestFile'
+
+This command will transfer the contents of the Original File to the end of
+the Newest File.
+
+----------------------------------------------------------------------------
+Full example of Appending:
+
+ls
+File1.txt	File2.txt	NewFile
+
+cat File1.txt
+"This is a line of text."
+
+cat File2.txt
+"Another line of text."
+
+cat File1.txt >> NewFile
+cat File2.txt >> NewFile
+
+cat NewFile
+"This is a line of text."
+"Another line of text."
+----------------------------------------------------------------------------
+
+
+-HQ

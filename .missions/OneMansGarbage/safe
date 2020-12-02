@@ -8,44 +8,54 @@
 scriptInput=$1
 
 # Object function, this must have the same name as objectName
-function flashlight
+function safe
 {
 	# Object variables
 	# mainText should contain the text that appears when the object is first used
-	local mainText="\"Great, this flashlight still works. I should add this to my inventory with '. ./flashlight -i'.\""
+	local mainText="\"Looks like this safe has 5 knobs with an arrow, each surrounded by the alphabet. I need to figure out what the combination is..\""
 	# If the object is notable and can be added to the journal, then journalText can contain either its own text or a subset of text grepped or gawked from mainText; otherwise, it contains an empty string
-	local journalText="I can shine light on hidden items with 'flashlight -a' or 'ls -aF'."
+	local journalText=""
 	# scriptPath contains the path of the script, found by the PWD variable; do not use variable when running function directly
 	local scriptPath=$PWD
 	# scriptName contains the name of the object script
-	local scriptName="flashlight"
+	local scriptName="safe"
 	# objectName contains the name of the object/object function, which matches what appears in the inventory. This should be a unique name, and is usually the same as scriptName, unless the name of the object in the inventory must be different from the name of its script
-	local objectName="flashlight"
+	local objectName="safe"
 	
 	option=$1
 	case $option in
 		"-a")
 			printMainText "$mainText"
 			# Insert the commands associated with using the object here
-			ls -aF
+			read -p "-> " code
+			if [[ "$code" == "chmod" ]]
+			  then
+				cp $mainDir/.objects/.contents/.safe1/* .
+				cp -a $missionsDir/"AnothersTreasure"/. ./"AnothersTreasure"
+				echo "\"That worked! I see a file. I should note it's contents! There is a gun as well. Also looks like a new directory appeared.\""
+			else
+				echo "\"The safe didn't open, I must have the wrong combo..\""
+			fi
 			unsetObjFunction "$objectName"
 			;;
 		"-i")
 			# If the object can be added to the inventory, uncomment addInventory, otherwise uncomment printErrorInventory
-			addInventory "$objectName" "$scriptPath/$scriptName"
-			#printErrorInventory
+			#addInventory "$objectName" "$scriptPath/$scriptName"
+			printErrorInventory
+			unsetObjFunction "$objectName"
 			;;
 		"-b")
 			# If the object is breakable, uncomment breakObject. If the object cannot be broken, uncomment printErrorUnbreakable, or if the object is necessary to the plot and should not be breakable, uncomment printErrorPlot
 			#breakObject "$objectName" "$scriptPath/$scriptName"
-			#printErrorUnbreakable
-			printErrorPlot
+			printErrorUnbreakable
+			#printErrorPlot
 			unsetObjFunction "$objectName"
 			;;
 		"-n")
 			# If the object is noteworthy, uncomment addJournalEntry, otherwise uncomment printErrorJournal
-			addJournalEntry "$journalText"
+			#addJournalEntry "$journalText"
 			#printErrorJournal
+			echo "\"No need to write about this safe in my journal, but maybe there is something that can help me solve the combo..\""
 			unsetObjFunction "$objectName"
 			;;
 		"--init")
@@ -63,5 +73,5 @@ function flashlight
 	return
 }
 
-flashlight $scriptInput
+safe $scriptInput
 unset scriptInput

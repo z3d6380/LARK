@@ -6,6 +6,15 @@ that you've learned the following Linux Commands:
 1) Using 'ls' or 'ls -F' to look around
 2) Using 'cd {locationName}' to move into another location
 3) Using 'cat {fileName}' to read a file
+	Note: use 'cat fileName | less' when trying to view larger files
+	      The pipe (|) passes the output of 'cat' into 'less'.
+	      'less' is a utility to see things one page at a time
+
+Also, if you need to save your progress and quit, remember from your
+journal that you can use 'abortMission'.
+
+One final note, you use 'man {command}' to lookup the full manual
+of any Linux command you learn.  This will not work for game commands.
 
 Now go and open the 2nd text file in this room with the vim
 text editor by issuing the following command:

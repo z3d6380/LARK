@@ -8,44 +8,51 @@
 scriptInput=$1
 
 # Object function, this must have the same name as objectName
-function flashlight
+function guard
 {
 	# Object variables
 	# mainText should contain the text that appears when the object is first used
-	local mainText="\"Great, this flashlight still works. I should add this to my inventory with '. ./flashlight -i'.\""
+	local mainText="\"I've killed the guard, but looks like Boreas is going to try and stop me next.\""
 	# If the object is notable and can be added to the journal, then journalText can contain either its own text or a subset of text grepped or gawked from mainText; otherwise, it contains an empty string
-	local journalText="I can shine light on hidden items with 'flashlight -a' or 'ls -aF'."
+	local journalText=""
 	# scriptPath contains the path of the script, found by the PWD variable; do not use variable when running function directly
 	local scriptPath=$PWD
 	# scriptName contains the name of the object script
-	local scriptName="flashlight"
+	local scriptName="guard"
 	# objectName contains the name of the object/object function, which matches what appears in the inventory. This should be a unique name, and is usually the same as scriptName, unless the name of the object in the inventory must be different from the name of its script
-	local objectName="flashlight"
+	local objectName="guard"
 	
 	option=$1
 	case $option in
-		"-a")
-			printMainText "$mainText"
+		"-a"|"-b")
+			if [[ $WP == 20 ]]
+			  then
+				mv $mainDir/.objects/.contents/.guard1/* .
+				breakObject "$objectName" "$scriptPath/$scriptName"
+				printMainText "$mainText"
+			else
+				echo 75 > $playerDir/.hp
+				mv $mainDir/.objects/.contents/.guard1/* .
+				breakObject "$objectName" "$scriptPath/$scriptName"
+				printMainText "$mainText"
+			fi
 			# Insert the commands associated with using the object here
-			ls -aF
 			unsetObjFunction "$objectName"
 			;;
 		"-i")
 			# If the object can be added to the inventory, uncomment addInventory, otherwise uncomment printErrorInventory
-			addInventory "$objectName" "$scriptPath/$scriptName"
+			#addInventory "$objectName" "$scriptPath/$scriptName"
 			#printErrorInventory
-			;;
-		"-b")
-			# If the object is breakable, uncomment breakObject. If the object cannot be broken, uncomment printErrorUnbreakable, or if the object is necessary to the plot and should not be breakable, uncomment printErrorPlot
-			#breakObject "$objectName" "$scriptPath/$scriptName"
-			#printErrorUnbreakable
-			printErrorPlot
+			echo "\"Ouch, I don't know what I was thinking trying to put the guard in my bag.\""
+			echo 50 > $playerDir/.hp
 			unsetObjFunction "$objectName"
 			;;
 		"-n")
 			# If the object is noteworthy, uncomment addJournalEntry, otherwise uncomment printErrorJournal
-			addJournalEntry "$journalText"
+			#addJournalEntry "$journalText"
 			#printErrorJournal
+			echo "\"Ouch! Despite the rugged asthetics of the guard, I don't think it was a good idea to try and take notes on him.\""
+                        echo 50 > $playerDir/.hp
 			unsetObjFunction "$objectName"
 			;;
 		"--init")
@@ -63,5 +70,5 @@ function flashlight
 	return
 }
 
-flashlight $scriptInput
+guard $scriptInput
 unset scriptInput

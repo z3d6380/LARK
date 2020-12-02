@@ -1,0 +1,20 @@
+Agent Ryann,
+
+Our Data Security Analysts were able to reverse engineer the WhiskeyTangoFoxtrot
+virus from the data you gathered with a previously corrupted file.
+
+They've determined that the following tool is best for restoring the files:
+
+/// cat corruptedFile | sed 's/[a-zA-Z0-9]//g' >> restoredFile \\\
+
+There are two files here that seem corrupted, and we're not sure if they also need to
+be put back in a specific order.  We need your skills to do so.
+
+Finally, we need you to enter into your journal the line count of the restored
+file for further analysis.
+
+/// cat restoredFile | wc -l \\\
+
+Good luck.
+
+-HQ

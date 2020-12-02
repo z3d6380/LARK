@@ -1,7 +1,7 @@
 Prologue:
 
 November 30, 1939:
-Mistrust between the Union of Soviet Socialist Republics (USSR) and Finland has lead to
+Mistrust between the Union of Soviet Socialist Republics (USSR) and Finalnd has lead to
 this day, the start of the "Winter War". Battles spread across the frozen forests of 
 Finland until March 13, 1940. In a humiliating loss, Finland ceded much of its territory
 to the Soviet regime to protect key cities of the Union.
@@ -13,4 +13,9 @@ during the second World War leads him to aid the United States in the Cold War. 
 his newfound technology to the Americans, he hopes to heal the wounds of the loss of the
 Winter War.
 
-Press 'q' to start the game.
+October 27, 1991:
+CIA Hacker and Cybersecurity Anaylst Cleopatra Ryann is among the first to use the new
+Linux software. While learning the mechanics of the OS, she is tasked to stop a mysterious
+Soviet named "BOREAS". Understanding the new software will take patience, skill, and memory.
+The new age of technology is just beginning as Ryann attempts to stop this Red Menace. Will 
+she be able to do so, or will the USSR become THE world's superpower?

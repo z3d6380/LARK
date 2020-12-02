@@ -12,7 +12,7 @@ function safe
 {
 	# Object variables
 	# mainText should contain the text that appears when the object is first used
-	local mainText="\"Looks like this safe has 5 knobs with an arrow, each surrounded by the alphabet. I need to figure out with the combination is..\""
+	local mainText="\"Looks like this safe has 5 knobs with an arrow, each surrounded by the alphabet. I need to figure out what the combination is..\""
 	# If the object is notable and can be added to the journal, then journalText can contain either its own text or a subset of text grepped or gawked from mainText; otherwise, it contains an empty string
 	local journalText=""
 	# scriptPath contains the path of the script, found by the PWD variable; do not use variable when running function directly
@@ -32,7 +32,7 @@ function safe
 			  then
 				cp $mainDir/.objects/.contents/.safe1/* .
 				cp -a $missionsDir/"AnothersTreasure"/. ./"AnothersTreasure"
-				echo "\"That worked! I see a file. I should note it's contents! Also looks like a new directory appeared.\""
+				echo "\"That worked! I see a file. I should note it's contents! There is a gun as well. Also looks like a new directory appeared.\""
 			else
 				echo "\"The safe didn't open, I must have the wrong combo..\""
 			fi

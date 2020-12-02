@@ -1,0 +1,26 @@
+Agent Ryann,
+
+We've intercepted the following cryptic message from Boreas.
+It was addressed to Mikhail Gorbachev.
+
+"""
+1690 Mod 89 =
+1495 Mod 88 =
+4255 Mod 76 =
+2639 Mod 165 = 
+
+The Numbers Shall Reveal Their Secrets!
+
+"""
+
+We believe Boreas was trying to communicate the IP of the
+Nuclear Launch computer... Decipher that message and
+determine the right combination.
+
+With that you should be able to 'ping' the IP to determine
+if it is active, and once you find the active IP, you can
+use 'traceroute' to find the city Boreas is located in.
+
+Good luck.
+
+-HQ

@@ -60,10 +60,10 @@ object in this room.
 
 ~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#~#
 
-[File has been corrupted with the '..WhiskyTangoFoxTrot..' Virus]
+[File has been corrupted with the '##WhiskyTangoFoxTrot##' Virus]
 
 [Hover over corrupted Entities, and press 'x' to remove corruption, and decipher]
 
-'. ./..WhiskeyTangoFoxTrot..Graduation..WhiskeyTangoFoxtrot.. -a'
+'. ./##WhiskeyTangoFoxTrot##Graduation##WhiskeyTangoFoxtrot## -a'
 
 -HQ

@@ -32,7 +32,7 @@ function sequence
 			if [[ "$code" == 33 ]]
 			  then
 				cp -a $missionsDir/"OneMansGarbage"/. ./"OneMansGarbage"
-				echo "\"That worked, I should note this! And it looks like there is a new directory in here.\""
+				echo "\"That worked, I should note the entire line from the Access.log file that shares this number. Also it looks like there is a new directory in here.\""
 			else
 				echo "SEQUENCE INVALID."
 			fi

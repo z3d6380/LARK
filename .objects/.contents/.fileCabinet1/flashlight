@@ -12,9 +12,9 @@ function flashlight
 {
 	# Object variables
 	# mainText should contain the text that appears when the object is first used
-	local mainText="\"Great, this flashlight still works. I should add this to my inventory with flashlight -i.\""
+	local mainText="\"Great, this flashlight still works. I should add this to my inventory with '. ./flashlight -i'.\""
 	# If the object is notable and can be added to the journal, then journalText can contain either its own text or a subset of text grepped or gawked from mainText; otherwise, it contains an empty string
-	local journalText="I can shine light on hidden items with 'flashlight' or 'ls -aF'."
+	local journalText="I can shine light on hidden items with 'flashlight -a' or 'ls -aF'."
 	# scriptPath contains the path of the script, found by the PWD variable; do not use variable when running function directly
 	local scriptPath=$PWD
 	# scriptName contains the name of the object script

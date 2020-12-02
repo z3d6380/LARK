@@ -1,0 +1,20 @@
+Modular Arithmetic:
+
+Modular mathematics is very similar to basic division concepts that we learned
+as children, however it comes with a bit of twist in syntax. The equation used
+for modular math when dividing two numbers looks as follows:
+
+(A/B) = Q modulo R.
+
+A is the dividend.
+B is the divisor.
+Q is the quotient.
+R is the remainder.
+
+In terms of normal division equations, the above modular equation is equal to:
+
+	_Q_  remainder R.
+      A| B
+
+Tip: Windows 10 Calculators offer a mod key that can calculate the answer to
+questions using modular arithmetic.

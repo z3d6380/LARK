@@ -8,53 +8,51 @@
 scriptInput=$1
 
 # Object function, this must have the same name as objectName
-function computer
+function guard
 {
 	# Object variables
 	# mainText should contain the text that appears when the object is first used
-	local mainText="\"The computer turned on and is asking for an access code.  I should look around for it..\""
+	local mainText="\"I've killed the guard, but looks like Boreas is going to try and stop me next.\""
 	# If the object is notable and can be added to the journal, then journalText can contain either its own text or a subset of text grepped or gawked from mainText; otherwise, it contains an empty string
 	local journalText=""
 	# scriptPath contains the path of the script, found by the PWD variable; do not use variable when running function directly
 	local scriptPath=$PWD
 	# scriptName contains the name of the object script
-	local scriptName="computer"
+	local scriptName="guard"
 	# objectName contains the name of the object/object function, which matches what appears in the inventory. This should be a unique name, and is usually the same as scriptName, unless the name of the object in the inventory must be different from the name of its script
-	local objectName="computer"
+	local objectName="guard"
 	
 	option=$1
 	case $option in
-		"-a")
-			printMainText "$mainText"
-			# Insert the commands associated with using the object here
-			read -p "Enter Code: " code
-			if [[ "$code" == 744 ]]
+		"-a"|"-b")
+			if [[ $WP == 20 ]]
 			  then
-				cp -a $missionsDir/"DominoEffect"/. ./"DominoEffect"
-				echo "\"I'm in! I should note this number in my journal with 'journal -w', then go into the 'insert' mode of the editor. Also, looks like there is a new directory in here.\""
+				mv $mainDir/.objects/.contents/.guard1/* .
+				breakObject "$objectName" "$scriptPath/$scriptName"
+				printMainText "$mainText"
 			else
-				echo "INVALID CODE"
+				echo 75 > $playerDir/.hp
+				mv $mainDir/.objects/.contents/.guard1/* .
+				breakObject "$objectName" "$scriptPath/$scriptName"
+				printMainText "$mainText"
 			fi
+			# Insert the commands associated with using the object here
 			unsetObjFunction "$objectName"
 			;;
 		"-i")
 			# If the object can be added to the inventory, uncomment addInventory, otherwise uncomment printErrorInventory
 			#addInventory "$objectName" "$scriptPath/$scriptName"
-			printErrorInventory
-			unsetObjFunction "$objectName"
-			;;
-		"-b")
-			# If the object is breakable, uncomment breakObject. If the object cannot be broken, uncomment printErrorUnbreakable, or if the object is necessary to the plot and should not be breakable, uncomment printErrorPlot
-			#breakObject "$objectName" "$scriptPath/$scriptName"
-			printErrorUnbreakable
-			#printErrorPlot
+			#printErrorInventory
+			echo "\"Ouch, I don't know what I was thinking trying to put the guard in my bag.\""
+			echo 50 > $playerDir/.hp
 			unsetObjFunction "$objectName"
 			;;
 		"-n")
 			# If the object is noteworthy, uncomment addJournalEntry, otherwise uncomment printErrorJournal
 			#addJournalEntry "$journalText"
 			#printErrorJournal
-			echo "\"No need to write about this computer in my journal, but if I find something that could be the code, I should note that\""
+			echo "\"Ouch! Despite the rugged asthetics of the guard, I don't think it was a good idea to try and take notes on him.\""
+                        echo 50 > $playerDir/.hp
 			unsetObjFunction "$objectName"
 			;;
 		"--init")
@@ -72,5 +70,5 @@ function computer
 	return
 }
 
-computer $scriptInput
+guard $scriptInput
 unset scriptInput
